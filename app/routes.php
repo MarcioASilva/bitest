@@ -20,8 +20,6 @@ Route::get('/', function()
 /* API */
 Route::group(array('prefix' => 'api'), function()
 {
-	Route::resource('husbands', '');
-	Route::resource('wives', '');
-	Route::resource('children', '');
-	Route::resource('toys', '');
+	Route::resource('husbands', 'HusbandsController');
+	Route::resource('wives', 'WivesController');
 });
