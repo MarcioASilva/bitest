@@ -15,3 +15,13 @@ Route::get('/', function()
 {
 	return View::make('hello');
 });
+
+
+/* API */
+Route::group(array('prefix' => 'api'), function()
+{
+	Route::resource('husbands', '');
+	Route::resource('wives', '');
+	Route::resource('children', '');
+	Route::resource('toys', '');
+});
