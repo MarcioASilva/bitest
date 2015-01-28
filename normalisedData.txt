@@ -1,0 +1,35 @@
+RecordID (concatenation of the 4 dates + Dataset + ReportID)
+Date_Delivered
+Date_Received
+Date_Returned
+File_Closed_Date
+Total
+Original_Estimate_Value
+Received_to_Delivered_Working_Days
+Received_to_Returned_Working_Days
+Received_to_Closed_Working_Days
+DatasetID
+XactAnalysisID
+File_StatusID
+Work_Not_Proceeding_ReasonID
+PerilID
+ReportID
+
+
+DatasetID
+Dataset
+
+XactAnalysisID
+XactAnalysis
+
+File_StatusID
+File_Status
+
+Work_Not_Proceeding_ReasonID
+Work_Not_Proceeding_Reason
+
+PerilID
+Peril
+
+ReportID 
+ReportMonth (MMYYYY)
