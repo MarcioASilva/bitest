@@ -15,11 +15,3 @@ Route::get('/', function()
 {
 	return View::make('hello');
 });
-
-
-/* API */
-Route::group(array('prefix' => 'api'), function()
-{
-	Route::resource('husbands', 'HusbandsController');
-	Route::resource('wives', 'WivesController');
-});
