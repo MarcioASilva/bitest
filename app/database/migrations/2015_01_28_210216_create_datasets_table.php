@@ -17,6 +17,7 @@ class CreateDatasetsTable extends Migration {
 			$table->increments('id');
 			$table->string('dataset');
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 
