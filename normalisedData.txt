@@ -6,7 +6,9 @@
 
 php artisan generate:scaffold report --fields="report_date:date"
 php artisan generate:scaffold dataset --fields="dataset:string"
-php artisan generate:scaffold statuses --fields="statuses:string"
+php artisan generate:scaffold statuses --fields="xact_analysis:string"
+php artisan generate:scaffold files --fields="file_status:string"
+
 
 
 #############################################################
