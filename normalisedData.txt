@@ -1,8 +1,19 @@
+#############################################################
+#
+# The Resources
+#
+#############################################################
+
 php artisan generate:scaffold report --fields="report_date:date"
+php artisan generate:scaffold dataset --fields="dataset:string"
+php artisan generate:scaffold statuses --fields="statuses:string"
 
 
-
-
+#############################################################
+#
+# The tables
+#
+#############################################################
 
 
 records (concatenation of the 4 dates + Dataset + ReportID)
