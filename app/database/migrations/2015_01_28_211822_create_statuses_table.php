@@ -17,6 +17,7 @@ class CreateStatusesTable extends Migration {
 			$table->increments('id');
 			$table->string('xact_analysis');
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 
