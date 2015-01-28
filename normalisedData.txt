@@ -1,4 +1,12 @@
-RecordID (concatenation of the 4 dates + Dataset + ReportID)
+php artisan generate:scaffold report --fields="report_date:date"
+
+
+
+
+
+
+records (concatenation of the 4 dates + Dataset + ReportID)
+-------------------------------------------------------------
 Date_Delivered
 Date_Received
 Date_Returned
@@ -16,20 +24,37 @@ PerilID
 ReportID
 
 
-DatasetID
-Dataset
 
-XactAnalysisID
-XactAnalysis
+datasets
+-------------------------------------------------------------
+dataset
 
-File_StatusID
-File_Status
 
-Work_Not_Proceeding_ReasonID
-Work_Not_Proceeding_Reason
 
-PerilID
+statuses
+-------------------------------------------------------------
+xact_analysis
+
+
+
+files
+-------------------------------------------------------------
+file_status
+
+
+
+reasons
+-------------------------------------------------------------
+work_not_proceeding_Reason
+
+
+
+perils
+-------------------------------------------------------------
 Peril
 
-ReportID
-ReportMonth (MMYYYY)
+
+
+reports
+-------------------------------------------------------------
+report_month (MMYYYY)
