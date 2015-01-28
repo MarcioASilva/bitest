@@ -2,12 +2,16 @@
 
 class Dataset extends \Eloquent {
 
+	use SoftDeletingTrait;
+
 	// Add your validation rules here
 	public static $rules = [
-		// 'title' => 'required'
+		'dataset' => 'required'
 	];
 
 	// Don't forget to fill this array
-	protected $fillable = [];
+	protected $fillable = [
+		'dataset'
+	];
 
 }
