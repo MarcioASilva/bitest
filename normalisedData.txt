@@ -31,5 +31,5 @@ Work_Not_Proceeding_Reason
 PerilID
 Peril
 
-ReportID 
+ReportID
 ReportMonth (MMYYYY)
