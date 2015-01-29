@@ -8,7 +8,25 @@ php artisan generate:scaffold report --fields="report_date:date"
 php artisan generate:scaffold dataset --fields="dataset:string"
 php artisan generate:scaffold statuses --fields="xact_analysis:string"
 php artisan generate:scaffold files --fields="file_status:string"
+php artisan generate:scaffold reasons --fields="work_not_proceeding_Reason:string"
+php artisan generate:scaffold perils --fields="peril:string"
 
+php artisan generate:scaffold perils --fields=
+"Date_Delivered:dateTime",
+"Date_Received:dateTime"
+"Date_Returned:dateTime"
+"File_Closed_Date:dateTime"
+"Total:decimal"
+"Original_Estimate_Value:decimal"
+"Received_to_Delivered_Working_Days:decimal"
+"Received_to_Returned_Working_Days:decimal"
+"Received_to_Closed_Working_Days:decimal"
+"DatasetID:integer"
+"XactAnalysisID:integer"
+"File_StatusID:integer"
+"Work_Not_Proceeding_ReasonID:integer"
+"PerilID:integer"
+"ReportID:integer"
 
 
 #############################################################
