@@ -11,22 +11,7 @@ php artisan generate:scaffold files --fields="file_status:string"
 php artisan generate:scaffold reasons --fields="work_not_proceeding_Reason:string"
 php artisan generate:scaffold perils --fields="peril:string"
 
-php artisan generate:scaffold perils --fields=
-"Date_Delivered:dateTime",
-"Date_Received:dateTime"
-"Date_Returned:dateTime"
-"File_Closed_Date:dateTime"
-"Total:decimal"
-"Original_Estimate_Value:decimal"
-"Received_to_Delivered_Working_Days:decimal"
-"Received_to_Returned_Working_Days:decimal"
-"Received_to_Closed_Working_Days:decimal"
-"DatasetID:integer"
-"XactAnalysisID:integer"
-"File_StatusID:integer"
-"Work_Not_Proceeding_ReasonID:integer"
-"PerilID:integer"
-"ReportID:integer"
+php artisan generate:scaffold records --fields="date_delivered:dateTime, date_received:dateTime, date_returned:dateTime, file_closed_date:dateTime, total:decimal, original_estimate_value:decimal, received_to_delivered_working_days:decimal, received_to_returned_working_days:decimal, received_to_closed_working_days:decimal, dataset_id:integer, xactanalysis_id:integer, file_status_id:integer, reason_id:integer, peril_id:integer, report_id:integer"
 
 
 #############################################################
