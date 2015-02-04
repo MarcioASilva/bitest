@@ -17,6 +17,7 @@ class CreateFilesTable extends Migration {
 			$table->increments('id');
 			$table->string('file_status');
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 

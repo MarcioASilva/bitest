@@ -24,13 +24,20 @@ class CreateRecordsTable extends Migration {
 			$table->decimal('received_to_delivered_working_days');
 			$table->decimal('received_to_returned_working_days');
 			$table->decimal('received_to_closed_working_days');
-			$table->integer('dataset_id');
-			$table->integer('xactanalysis_id');
-			$table->integer('file_status_id');
-			$table->integer('reason_id');
-			$table->integer('peril_id');
-			$table->integer('report_id');
+			$table->integer('dataset_id')->unsigned();
+			$table->foreign('dataset_id')->references('id')->on('datasets')->onDelete('cascade');
+			$table->integer('xactanalysis_id')->unsigned();
+			$table->foreign('xactanalysis_id')->references('id')->on('statuses')->onDelete('cascade');
+			$table->integer('file_status_id')->unsigned();
+			$table->foreign('file_status_id')->references('id')->on('files')->onDelete('cascade');
+			$table->integer('reason_id')->unsigned();
+			$table->foreign('reason_id')->references('id')->on('reasons')->onDelete('cascade');
+			$table->integer('peril_id')->unsigned();
+			$table->foreign('peril_id')->references('id')->on('perils')->onDelete('cascade');
+			$table->integer('report_id')->unsigned();
+			$table->foreign('report_id')->references('id')->on('reports')->onDelete('cascade');
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 
