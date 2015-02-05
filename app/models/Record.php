@@ -17,7 +17,7 @@ class Record extends \Eloquent {
 		'received_to_closed_working_days'    => 'regex:/[\d]*,[\d]{2}/',
 		'dataset_id'                         => 'required|integer',
 		'xstatus_id'   		                 	 => 'required|integer',
-		'file_status_id'                     => 'required|integer',
+		'file_id'                     => 'required|integer',
 		'reason_id'                          => 'required|integer',
 		'peril_id'                           => 'required|integer',
 		'report_id'                          => 'required|integer'
