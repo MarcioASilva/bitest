@@ -13,5 +13,4 @@ class Report extends \Eloquent {
 	protected $fillable = [
 		'report_date'
 	];
-
 }

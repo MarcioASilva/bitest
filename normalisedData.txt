@@ -23,21 +23,21 @@ php artisan generate:scaffold records --fields="date_delivered:dateTime, date_re
 
 records (concatenation of the 4 dates + Dataset + ReportID)
 -------------------------------------------------------------
-Date_Delivered
-Date_Received
-Date_Returned
-File_Closed_Date
-Total
-Original_Estimate_Value
-Received_to_Delivered_Working_Days
-Received_to_Returned_Working_Days
-Received_to_Closed_Working_Days
-DatasetID
-XactAnalysisID
-File_StatusID
-Work_Not_Proceeding_ReasonID
-PerilID
-ReportID
+date_delivered
+date_received
+date_returned
+file_closed_date
+total
+original_estimate_value
+received_to_delivered_working_days
+received_to_returned_working_days
+received_to_closed_working_days
+dataset_id
+dactAnalysis_id
+file_Status_id
+work_not_proceeding_reason_id
+peril_id
+report_id
 
 
 
@@ -47,7 +47,7 @@ dataset
 
 
 
-statuses
+xstatuses
 -------------------------------------------------------------
 xact_analysis
 
@@ -61,16 +61,16 @@ file_status
 
 reasons
 -------------------------------------------------------------
-work_not_proceeding_Reason
+work_not_proceeding_reason
 
 
 
 perils
 -------------------------------------------------------------
-Peril
+peril
 
 
 
 reports
 -------------------------------------------------------------
-report_month (MMYYYY)
+report_date (MMYYYY)
