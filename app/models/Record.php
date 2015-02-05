@@ -2,6 +2,8 @@
 
 class Record extends \Eloquent {
 
+	use SoftDeletingTrait;
+
 	// Add your validation rules here
 	public static $rules = [
 		'date_delivered'                     => 'required|date_format:"Y-m-d H:i:s"',

@@ -2,7 +2,9 @@
 
 class Peril extends \Eloquent {
 
-	// Add your validation rules here
+	use SoftDeletingTrait;
+
+  // Add your validation rules here
 	public static $rules = [
 		'peril' => 'required'
 	];
