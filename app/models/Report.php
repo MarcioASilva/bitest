@@ -13,4 +13,9 @@ class Report extends \Eloquent {
 	protected $fillable = [
 		'report_date'
 	];
+
+  public function records()
+  {
+    return $this->hasMany('Record');
+  }
 }

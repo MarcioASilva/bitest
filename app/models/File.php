@@ -14,4 +14,8 @@ class File extends \Eloquent {
     'file_status'
   ];
 
+  public function records()
+  {
+    return $this->hasMany('Record');
+  }
 }

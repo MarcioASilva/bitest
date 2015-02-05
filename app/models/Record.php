@@ -17,7 +17,7 @@ class Record extends \Eloquent {
 		'received_to_closed_working_days'    => 'regex:/[\d]*,[\d]{2}/',
 		'dataset_id'                         => 'required|integer',
 		'xstatus_id'   		                 	 => 'required|integer',
-		'file_id'                     => 'required|integer',
+		'file_id'                            => 'required|integer',
 		'reason_id'                          => 'required|integer',
 		'peril_id'                           => 'required|integer',
 		'report_id'                          => 'required|integer'
@@ -42,4 +42,33 @@ class Record extends \Eloquent {
 		'report_id'
 	];
 
+	public function dataset()
+	{
+		return $this->belongsTo('Dataset');
+	}
+
+	public function file()
+	{
+		return $this->belongsTo('File');
+	}
+
+	public function peril()
+	{
+		return $this->belongsTo('Peril');
+	}
+
+		public function reason()
+	{
+		return $this->belongsTo('Reason');
+	}
+
+	public function report()
+	{
+		return $this->belongsTo('Report');
+	}
+
+	public function xstatus()
+	{
+		return $this->belongsTo('Xstatus');
+	}
 }

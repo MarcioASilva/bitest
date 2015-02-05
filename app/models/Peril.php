@@ -14,4 +14,8 @@ class Peril extends \Eloquent {
 		'peril'
 	];
 
+  public function records()
+  {
+    return $this->hasMany('Record');
+  }
 }

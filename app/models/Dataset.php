@@ -14,4 +14,8 @@ class Dataset extends \Eloquent {
 		'dataset'
 	];
 
+  public function records()
+  {
+    return $this->hasMany('Record');
+  }
 }

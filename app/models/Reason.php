@@ -14,4 +14,8 @@ class Reason extends \Eloquent {
 		'work_not_proceeding_reason'
 	];
 
+  public function records()
+  {
+    return $this->hasMany('Record');
+  }
 }
