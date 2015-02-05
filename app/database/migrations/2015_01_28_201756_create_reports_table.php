@@ -14,6 +14,8 @@ class CreateReportsTable extends Migration {
 	{
 		Schema::create('reports', function(Blueprint $table)
 		{
+			$table->engine = 'InnoDB';
+
 			$table->increments('id');
 			$table->date('report_date');
 			$table->timestamps();
@@ -31,5 +33,4 @@ class CreateReportsTable extends Migration {
 	{
 		Schema::drop('reports');
 	}
-
 }

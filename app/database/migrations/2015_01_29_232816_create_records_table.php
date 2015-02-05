@@ -14,6 +14,8 @@ class CreateRecordsTable extends Migration {
 	{
 		Schema::create('records', function(Blueprint $table)
 		{
+			$table->engine = 'InnoDB';
+
 			$table->increments('id');
 			$table->dateTime('date_delivered');
 			$table->dateTime('date_received');

@@ -14,6 +14,8 @@ class CreateReasonsTable extends Migration {
 	{
 		Schema::create('reasons', function(Blueprint $table)
 		{
+			$table->engine = 'InnoDB';
+
 			$table->increments('id');
 			$table->string('work_not_proceeding_Reason');
 			$table->timestamps();

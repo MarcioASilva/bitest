@@ -14,6 +14,8 @@ class CreateFilesTable extends Migration {
 	{
 		Schema::create('files', function(Blueprint $table)
 		{
+			$table->engine = 'InnoDB';
+
 			$table->increments('id');
 			$table->string('file_status');
 			$table->timestamps();

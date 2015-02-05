@@ -14,6 +14,8 @@ class CreateDatasetsTable extends Migration {
 	{
 		Schema::create('datasets', function(Blueprint $table)
 		{
+			$table->engine = 'InnoDB';
+
 			$table->increments('id');
 			$table->string('dataset');
 			$table->timestamps();

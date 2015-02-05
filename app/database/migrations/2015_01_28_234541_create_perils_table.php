@@ -14,6 +14,8 @@ class CreatePerilsTable extends Migration {
 	{
 		Schema::create('perils', function(Blueprint $table)
 		{
+			$table->engine = 'InnoDB';
+
 			$table->increments('id');
 			$table->string('peril');
 			$table->timestamps();
