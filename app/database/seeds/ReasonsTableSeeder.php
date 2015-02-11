@@ -1,20 +1,17 @@
 <?php
 
-// Composer: "fzaninotto/faker": "v1.3.0"
-use Faker\Factory as Faker;
-
 class ReasonsTableSeeder extends Seeder {
 
-	public function run()
-	{
-		$faker = Faker::create();
+  public function run()
+    {
+    Reason::create([
+      Dataset::create([,
+        'work_not_proceeding_reason' => 'Cash/Other Settlement'
+      ]);
 
-		foreach(range(1, 10) as $index)
-		{
-			Reason::create([
-
-			]);
-		}
-	}
-
+      Dataset::create([,
+        'work_not_proceeding_reason' => 'Abandoned'
+      ]);
+    ]);
+  }
 }

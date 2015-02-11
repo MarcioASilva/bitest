@@ -4,7 +4,7 @@ class Xstatus extends \Eloquent {
 
   use SoftDeletingTrait;
 
-  protected $table = 'xstatuses';
+  //protected $table = 'xstatuses';
 
   // Add your validation rules here
   public static $rules = [

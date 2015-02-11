@@ -1,20 +1,19 @@
 <?php
 
-// Composer: "fzaninotto/faker": "v1.3.0"
-use Faker\Factory as Faker;
-
 class StatusesTableSeeder extends Seeder {
 
 	public function run()
 	{
-		$faker = Faker::create();
-
-		foreach(range(1, 10) as $index)
-		{
+		
 			Status::create([
+        Dataset::create([,
+          'xact_analysis' => 'In Assign Queue'
+        ]);
 
+        Dataset::create([,
+          'xact_analysis' => 'Delivered'
+        ]);
 			]);
-		}
 	}
 
 }
