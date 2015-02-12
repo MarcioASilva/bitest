@@ -1,6 +1,6 @@
 <?php
 
-class ReasonsController extends \BaseController {
+class ReasonsController extends Controller {
 
 	/**
 	 * Display a listing of reasons

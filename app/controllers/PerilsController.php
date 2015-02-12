@@ -1,6 +1,6 @@
 <?php
 
-class PerilsController extends \BaseController {
+class PerilsController extends Controller {
 
 	/**
 	 * Display a listing of perils

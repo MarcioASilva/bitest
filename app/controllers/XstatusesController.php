@@ -1,6 +1,6 @@
 <?php
 
-class XstatusesController extends \BaseController {
+class XstatusesController extends Controller {
 
 	/**
 	 * Display a listing of xstatuses

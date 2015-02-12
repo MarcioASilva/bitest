@@ -1,6 +1,6 @@
 <?php
 
-class RecordsController extends \BaseController {
+class RecordsController extends Controller {
 
 	/**
 	 * Display a listing of records

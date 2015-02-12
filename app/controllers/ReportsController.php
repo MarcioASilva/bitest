@@ -1,6 +1,6 @@
 <?php
 
-class ReportsController extends \BaseController {
+class ReportsController extends Controller {
 
 	/**
 	 * Display a listing of reports

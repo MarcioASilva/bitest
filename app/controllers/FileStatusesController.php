@@ -1,6 +1,6 @@
 <?php
 
-class FileStatusesController extends \BaseController {
+class FileStatusesController extends Controller {
 
 	/**
 	 * Display a listing of files
