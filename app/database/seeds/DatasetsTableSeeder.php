@@ -4,11 +4,11 @@ class DatasetsTableSeeder extends Seeder {
 
 	public function run()
 	{
-    Dataset::create([,
+    Dataset::create([
       'dataset' => 'AXA - Imperial WNS'
     ]);
 
-    Dataset::create([,
+    Dataset::create([
       'dataset' => 'AXA - GAB WNS'
     ]);
 	}

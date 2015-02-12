@@ -15,3 +15,14 @@ Route::get('/', function()
 {
 	return View::make('hello');
 });
+
+Route::group(array('prefix' => 'api'), function()
+{
+  Route::resource('perils', 'PerilsController');
+  Route::resource('reasons', 'ReasonsController');
+  Route::resource('records', 'RecordsController');
+  Route::resource('reports', 'ReportsController');
+  Route::resource('datasets', 'DatasetsController');
+  Route::resource('xstatuses', 'XstatusesController');
+  Route::resource('filestatuses', 'FileStatusesController');
+});

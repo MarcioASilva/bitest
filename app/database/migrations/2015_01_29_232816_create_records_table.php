@@ -28,10 +28,10 @@ class CreateRecordsTable extends Migration {
 			$table->decimal('received_to_closed_working_days');
 			$table->integer('dataset_id')->unsigned();
 			$table->foreign('dataset_id')->references('id')->on('datasets')->onDelete('cascade');
-			$table->integer('xactanalysis_id')->unsigned();
-			$table->foreign('xactanalysis_id')->references('id')->on('xstatuses')->onDelete('cascade');
-			$table->integer('file_id')->unsigned();
-			$table->foreign('file_id')->references('id')->on('files')->onDelete('cascade');
+			$table->integer('xstatus_id')->unsigned();
+			$table->foreign('xstatus_id')->references('id')->on('xstatuses')->onDelete('cascade');
+			$table->integer('file_status_id')->unsigned();
+			$table->foreign('file_status_id')->references('id')->on('file_statuses')->onDelete('cascade');
 			$table->integer('reason_id')->unsigned();
 			$table->foreign('reason_id')->references('id')->on('reasons')->onDelete('cascade');
 			$table->integer('peril_id')->unsigned();

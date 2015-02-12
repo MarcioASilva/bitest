@@ -11,7 +11,7 @@ class PerilsController extends \BaseController {
 	{
 		$perils = Peril::all();
 
-		return View::make('perils.index', compact('perils'));
+		return Response::json($perils, 200);
 	}
 
 	/**

@@ -4,9 +4,7 @@ class RecordsTableSeeder extends Seeder {
 
 	public function run()
 	{
-		
-		Record::create([
-      Dataset::create([,
+      Record::create([
         'date_delivered'                     => \Carbon\Carbon::now()->toDateTimeString(),
         'date_received'                      => \Carbon\Carbon::now()->toDateTimeString(),
         'date_returned'                      => \Carbon\Carbon::now()->toDateTimeString(),
@@ -18,13 +16,13 @@ class RecordsTableSeeder extends Seeder {
         'received_to_closed_working_days'    => 71.889,
         'dataset_id'                         => 1,
         'xstatus_id'                         => 1,
-        'file_id'                            => 1,
+        'file_status_id'                     => 1,
         'reason_id'                          => 1,
         'peril_id'                           => 1,
-        'report_id'
+        'report_id'                          => 1
       ]);
 
-      Dataset::create([,
+      Record::create([
         'date_delivered'                     => \Carbon\Carbon::now()->toDateTimeString(),
         'date_received'                      => \Carbon\Carbon::now()->toDateTimeString(),
         'date_returned'                      => \Carbon\Carbon::now()->toDateTimeString(),
@@ -36,12 +34,11 @@ class RecordsTableSeeder extends Seeder {
         'received_to_closed_working_days'    => 70,
         'dataset_id'                         => 2,
         'xstatus_id'                         => 2,
-        'file_id'                            => 2,
+        'file_status_id'                     => 2,
         'reason_id'                          => 2,
         'peril_id'                           => 2,
-        'report_id'
-      ]);      
-		]);
+        'report_id'                          => 2
+      ]);
 	}
 
 }

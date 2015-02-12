@@ -4,14 +4,11 @@ class ReportsTableSeeder extends Seeder {
 
 	public function run()
 	{
-			Report::create([
-        Dataset::create([,
+        Report::create([
         'report_date' => '201502'
       ]);
-              Dataset::create([,
+              Report::create([
         'report_date' => '201503'
-      ]);  
-
-			]);
+      ]);
 	}
 }

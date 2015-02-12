@@ -4,14 +4,12 @@ class ReasonsTableSeeder extends Seeder {
 
   public function run()
     {
-    Reason::create([
-      Dataset::create([,
+      Reason::create([
         'work_not_proceeding_reason' => 'Cash/Other Settlement'
       ]);
 
-      Dataset::create([,
+      Reason::create([
         'work_not_proceeding_reason' => 'Abandoned'
       ]);
-    ]);
   }
 }

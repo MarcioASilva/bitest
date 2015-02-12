@@ -2,15 +2,15 @@
 
 class PerilsTableSeeder extends Seeder {
 
-	public function run()
-	{
-			Peril::create([
-        'peril' => 'Impact'
-			]);
+  public function run()
+  {
+    Peril::create([
+      'peril' => 'Impact'
+    ]);
 
-      Peril::create([
-        'peril' => 'Explosion'
-      ]);
-	}
+    Peril::create([
+      'peril' => 'Explosion'
+    ]);
+  }
 
 }
