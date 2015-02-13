@@ -11,18 +11,15 @@ class PerilsController extends Controller {
 	{
 		$perils = Peril::all();
 
-		return Response::json($perils, 200);
+		return Response::json(array(
+				'error' => false,
+				'peril' => $perils->toArray()
+			),
+			200
+		);
 	}
 
-	/**
-	 * Show the form for creating a new peril
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-		return View::make('perils.create');
-	}
+	// remove create
 
 	/**
 	 * Store a newly created peril in storage.
@@ -33,14 +30,24 @@ class PerilsController extends Controller {
 	{
 		$validator = Validator::make($data = Input::all(), Peril::$rules);
 
-		if ($validator->fails())
+		if($validator->fails())
 		{
-			return Redirect::back()->withErrors($validator)->withInput();
+			return Response::json(array(
+					'error'   => 'true',
+					'message' => $validator->messages()
+				),
+				400
+			);
 		}
 
-		Peril::create($data);
+		$peril = Peril::create($data);
 
-		return Redirect::route('perils.index');
+		return Response::json(array(
+				'error' => false,
+				'peril' => $peril->toArray()
+			),
+			200
+		);
 	}
 
 	/**
@@ -53,21 +60,14 @@ class PerilsController extends Controller {
 	{
 		$peril = Peril::findOrFail($id);
 
-		return View::make('perils.show', compact('peril'));
+		return Response::json(array(
+				'error'  => false,
+      	'perils' => $peril->toArray()
+      ),
+      200
+		);
 	}
 
-	/**
-	 * Show the form for editing the specified peril.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		$peril = Peril::find($id);
-
-		return View::make('perils.edit', compact('peril'));
-	}
 
 	/**
 	 * Update the specified peril in storage.
@@ -81,14 +81,24 @@ class PerilsController extends Controller {
 
 		$validator = Validator::make($data = Input::all(), Peril::$rules);
 
-		if ($validator->fails())
+		if($validator->fails())
 		{
-			return Redirect::back()->withErrors($validator)->withInput();
+			return Response::json(array(
+					'error'   => 'true',
+					'message' => $validator->messages()
+				),
+				400
+			);
 		}
 
 		$peril->update($data);
 
-		return Redirect::route('perils.index');
+		return Response::json(array(
+				'error'  => false,
+      	'perils' => $peril->toArray()
+      ),
+      200
+		);
 	}
 
 	/**
@@ -101,7 +111,12 @@ class PerilsController extends Controller {
 	{
 		Peril::destroy($id);
 
-		return Redirect::route('perils.index');
+		return Response::json(array(
+				'error'  => false,
+      	'message' => 'Peril deleted successfully'
+      ),
+      200
+		);
 	}
 
 }
