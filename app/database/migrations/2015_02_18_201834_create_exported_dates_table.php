@@ -14,9 +14,12 @@ class CreateExportedDatesTable extends Migration {
 	{
 		Schema::create('exported_dates', function(Blueprint $table)
 		{
+			$table->engine = 'InnoDB';
+
 			$table->increments('id');
 			$table->string('exported_date');
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 
@@ -30,5 +33,4 @@ class CreateExportedDatesTable extends Migration {
 	{
 		Schema::drop('exported_dates');
 	}
-
 }

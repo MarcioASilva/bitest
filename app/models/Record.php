@@ -21,6 +21,7 @@ class Record extends \Eloquent {
 		'reason_id'                          => 'required|integer',
 		'peril_id'                           => 'required|integer',
 		'report_id'                          => 'required|integer'
+		'exported_date_id'                   => 'required|integer'
 	];
 
 	// Don't forget to fill this array
@@ -40,6 +41,7 @@ class Record extends \Eloquent {
 		'reason_id',
 		'peril_id',
 		'report_id'
+		'exported_date_id'
 	];
 
 	public function dataset()
@@ -70,5 +72,10 @@ class Record extends \Eloquent {
 	public function xstatus()
 	{
 		return $this->belongsTo('Xstatus');
+	}
+
+	public function exported_dates()
+	{
+		return $this->belongsTo('exported_date');
 	}
 }

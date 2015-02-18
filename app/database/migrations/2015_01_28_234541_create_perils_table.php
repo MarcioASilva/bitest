@@ -33,5 +33,4 @@ class CreatePerilsTable extends Migration {
 	{
 		Schema::drop('perils');
 	}
-
 }

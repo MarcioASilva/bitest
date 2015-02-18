@@ -2,12 +2,21 @@
 
 class ExportedDate extends \Eloquent {
 
-	// Add your validation rules here
+  use SoftDeletingTrait;
+	
+  // Add your validation rules here
 	public static $rules = [
-		// 'title' => 'required'
+    'exported_date' => 'required'
 	];
 
 	// Don't forget to fill this array
-	protected $fillable = [];
+  protected $fillable = [
+    'exported_date'
+  ];
+
+  public function records()
+  {
+    return $this->hasMany('Record');
+  }
 
 }
