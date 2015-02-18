@@ -20,7 +20,7 @@ class Record extends \Eloquent {
 		'file_id'                            => 'required|integer',
 		'reason_id'                          => 'required|integer',
 		'peril_id'                           => 'required|integer',
-		'report_id'                          => 'required|integer'
+		'report_id'                          => 'required|integer',
 		'exported_date_id'                   => 'required|integer'
 	];
 
@@ -40,7 +40,7 @@ class Record extends \Eloquent {
 		'file_status_id',
 		'reason_id',
 		'peril_id',
-		'report_id'
+		'report_id',
 		'exported_date_id'
 	];
 
@@ -51,7 +51,7 @@ class Record extends \Eloquent {
 
 	public function file()
 	{
-		return $this->belongsTo('File');
+		return $this->belongsTo('FileStatus');
 	}
 
 	public function peril()
@@ -76,6 +76,6 @@ class Record extends \Eloquent {
 
 	public function exported_dates()
 	{
-		return $this->belongsTo('exported_date');
+		return $this->belongsTo('ExportedDate');
 	}
 }

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder {
     $this->call('ReportsTableSeeder');
     $this->call('XstatusesTableSeeder');
     $this->call('RecordsTableSeeder');
+    $this->call('ExportedDatesTableSeeder');
 	}
 
 }

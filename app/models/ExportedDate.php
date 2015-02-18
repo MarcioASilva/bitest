@@ -18,5 +18,4 @@ class ExportedDate extends \Eloquent {
   {
     return $this->hasMany('Record');
   }
-
 }
