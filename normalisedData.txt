@@ -14,6 +14,8 @@ php artisan generate:scaffold perils --fields="peril:string"
 php artisan generate:scaffold records --fields="date_delivered:dateTime, date_received:dateTime, date_returned:dateTime, file_closed_date:dateTime, total:decimal, original_estimate_value:decimal, received_to_delivered_working_days:decimal, received_to_returned_working_days:decimal, received_to_closed_working_days:decimal, dataset_id:integer, xactanalysis_id:integer, file_status_id:integer, reason_id:integer, peril_id:integer, report_id:integer"
 
 
+php artisan generate:scaffold exported_dates --fields="exported_date:string"
+
 #############################################################
 #
 # The tables
@@ -74,3 +76,9 @@ peril
 reports
 -------------------------------------------------------------
 report_date (MMYYYY)
+
+
+
+exported_dates
+-------------------------------------------------------------
+exported_date
