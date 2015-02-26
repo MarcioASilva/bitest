@@ -2,13 +2,19 @@
 
 class PagesController extends Controller {
 
-  public function getVolumeSummaryTable(datasetId, from, to)
+  // /api/charts/volume-summary-table
+  public function getVolumeSummaryTable()
   {
-    $volumeSummaryTable = Records::all();
+    $volumeSummaryTable = Record::all();
+
+
+
+    //Record::;
+
 
     return Response::json(array(
         'error' => false,
-        'peril' => $perils->toArray()
+        'records' => $volumeSummaryTable->toArray()
       ),
       200
     );

@@ -16,8 +16,12 @@ Route::get('/', function()
 	return View::make('hello');
 });
 
+// /api
 Route::group(array('prefix' => 'api'), function()
 {
+  // /api/charts
+  Route::controller('charts', 'PagesController');
+
   Route::resource('perils', 'PerilsController');
   Route::resource('reasons', 'ReasonsController');
   Route::resource('records', 'RecordsController');
