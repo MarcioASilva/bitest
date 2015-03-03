@@ -3,7 +3,7 @@
 class PagesController extends Controller {
 
   // /api/charts/volume-summary-table
-  public function getVolumeSummaryTable()
+  public function getPage1() //VolumeSummaryTable
   {
     $volumeSummaryTable = Record::all();
 
