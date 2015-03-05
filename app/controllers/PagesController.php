@@ -62,7 +62,7 @@ class PagesController extends Controller {
   // /api/charts/page1
   public function getVolumeSummaryTable()
   {
-    $volumeSummaryTable = Record::where('id','=','1')->('id','=','1')->get();
+    $volumeSummaryTable = Record::where('id','=','1')->get(); //chain more
     //$volumeSummaryTable = Record::with('originalestimatevalue')->get();
     //find(1);
 
