@@ -14,7 +14,7 @@ class PagesController extends Controller {
     foreach($selectDrodpdown as $row)
     {
       // $row->exported_date = Carbon::createFromFormat('Y-m-d H:i:s', $row->exported_date)->format('jS F Y');
-      $row->exported_date = Carbon::createFromTimeStamp(strtotime($row->exported_date))->format('jS F Y');
+      $row->exported_date = Carbon::createFromTimeStamp(strtotime($row->exported_date))->format('F Y');
 
       $trimmedDropdown[] = $row;
     }
@@ -60,9 +60,11 @@ class PagesController extends Controller {
   }
 
   // /api/charts/page1
-  public function getPage1() //VolumeSummaryTable
+  public function getVolumeSummaryTable()
   {
-    $volumeSummaryTable = Record::all();
+    $volumeSummaryTable = Record::where('id','=','1')->('id','=','1')->get();
+    //$volumeSummaryTable = Record::with('originalestimatevalue')->get();
+    //find(1);
 
     return Response::json([
         'error'   => false,
