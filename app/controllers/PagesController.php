@@ -74,4 +74,9 @@ class PagesController extends Controller {
     );
   }
 
+  public function getImportFile()
+  {
+    dd('f');
+  }
+
 }
