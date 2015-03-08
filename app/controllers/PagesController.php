@@ -76,12 +76,21 @@ class PagesController extends Controller {
 
   public function getImportFile()
   {
-    Excel::load(public_path() . '/uploads/file.xls', function($reader)
+
+    echo 'got in <br>';
+    // ini_set('max_execution_time', 3000);
+    // set_time_limit(0); //60 seconds
+
+    Excel::load(public_path() . '/uploads/file_less_columns_full.csv', function($reader)
     {
+      $lines = 0;
+
       foreach($reader->get() as $row)
       {
-        dd($row->dataset);
+        $lines++ . '<br>';
       }
+
+      echo $lines;
     });
 
   }

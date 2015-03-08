@@ -13,7 +13,8 @@
 
 Route::get('/', function()
 {
-	return View::make('hello');
+  phpinfo();
+	// return View::make('hello');
 });
 
 // /api
