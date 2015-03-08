@@ -122,7 +122,7 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 		'Way\Generators\GeneratorsServiceProvider',
-		'Maatwebsite\Excel\ExcelServiceProvider',
+		'Maatwebsite\Excel\ExcelServiceProvider', //Added by Marcio
 
 	),
 

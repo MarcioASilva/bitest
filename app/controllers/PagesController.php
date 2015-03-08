@@ -76,7 +76,14 @@ class PagesController extends Controller {
 
   public function getImportFile()
   {
-    dd('f');
+    Excel::load(public_path() . '/uploads/file.xls', function($reader)
+    {
+      foreach($reader->get() as $row)
+      {
+        dd($row->dataset);
+      }
+    });
+
   }
 
 }
