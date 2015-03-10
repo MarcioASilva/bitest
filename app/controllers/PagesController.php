@@ -77,21 +77,28 @@ class PagesController extends Controller {
   public function getImportFile()
   {
 
-    $time = strtotime('now');
-    // ini_set('max_execution_time', 3000);
-    // set_time_limit(0); //60 seconds
+    // Excel::load(public_path() . '/uploads/file_1k.csv', function($reader)
+    // {
+    //   // $output = $reader->get();
+    //   // echo $output;
 
-    $counter=0;
-    Excel::load(public_path() . '/uploads/file_1k.csv', function($reader)
-    {
-      foreach ($render as $key => $value) {
-        $counter++;
-      }
-    });
+    //   // foreach($reader['dataset'] as $item) {
+    //   //   echo 'a';
+    //   // }
 
-    echo $counter;
+    // }
+    // );
 
-    echo date("i:s", $time - strtotime('now'));
-    // echo $count;
+    $results = Excel::load(public_path() . '/uploads/file_1k.csv')->get();
+
+    foreach ($results as $row) {
+      Dataset::create([
+        'dataset'=> $row->dataset->groupBy('dataset')
+      ]);
+    }
+
+    var_dump('dataset entered');
+
   }
+
 }
