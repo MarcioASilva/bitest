@@ -63,8 +63,6 @@ class PagesController extends Controller {
   public function getVolumeSummaryTable()
   {
     $volumeSummaryTable = Record::where('id','=','1')->get(); //chain more
-    //$volumeSummaryTable = Record::with('originalestimatevalue')->get();
-    //find(1);
 
     return Response::json([
         'error'   => false,
@@ -77,23 +75,11 @@ class PagesController extends Controller {
   public function getImportFile()
   {
 
-    // Excel::load(public_path() . '/uploads/file_1k.csv', function($reader)
-    // {
-    //   // $output = $reader->get();
-    //   // echo $output;
-
-    //   // foreach($reader['dataset'] as $item) {
-    //   //   echo 'a';
-    //   // }
-
-    // }
-    // );
-
     $results = Excel::load(public_path() . '/uploads/file_1k.csv')->get();
 
     foreach ($results as $row) {
       Dataset::create([
-        'dataset'=> $row->dataset->groupBy('dataset')
+        'dataset'=> $row->dataset
       ]);
     }
 
