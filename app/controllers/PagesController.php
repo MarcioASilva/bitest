@@ -98,7 +98,7 @@ class PagesController extends Controller {
 
     //puts dataset from $rows in to $spreadsheetDataset array
     foreach ($spreadsheet as $rows) {
-      $spreadsheetDataset[$counter1] = $rows ->dataset.'<br>';
+      $spreadsheetDataset[$counter1] = $rows ->dataset;
       $counter1++;
       // $rows = $rows ->toArray();
       // print $rows.'<br>';
@@ -124,7 +124,7 @@ class PagesController extends Controller {
 
     //puts dataset from $rows in to $spreadsheetDataset array
     foreach ($DB as $rows) {
-      $DBDataset[$counter2] = $rows ->dataset.'<br>';
+      $DBDataset[$counter2] = $rows ->dataset;
       $counter2++;
       // $rows = $rows ->toArray();
       // print $rows.'<br>';
@@ -144,13 +144,17 @@ class PagesController extends Controller {
 
     //Compare results from DB x Spreadsheet
 
-    //call comparing function 
+    //call comparing method
+    for ($i=0; $i < sizeof($spreadsheetDataset); $i++) { 
+      if($spreadsheetDataset[1]<>$DBDataset[1])
+      {
+        // Dataset::create([
+        // 'dataset'=> $spreadsheetDataset[$i]
+        // ]);
+      echo $spreadsheetDataset[$i];
+      }
+    }
+
   }
 
-  public function CompareArrays(array1, array2)
-  {
-    foreach ($variable as $key => $value) {
-      # code...
-    }
-  }
 }
