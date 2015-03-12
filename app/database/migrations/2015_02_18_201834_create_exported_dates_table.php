@@ -17,7 +17,7 @@ class CreateExportedDatesTable extends Migration {
 			$table->engine = 'InnoDB';
 
 			$table->increments('id');
-			$table->string('exported_date');
+			$table->date('exported_date');
 			$table->timestamps();
 			$table->softDeletes();
 		});

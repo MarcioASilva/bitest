@@ -6,7 +6,7 @@ class Dataset extends \Eloquent {
 
 	// Add your validation rules here
 	public static $rules = [
-		'dataset' => 'required'
+		'dataset' => 'required|unique:datasets'
 	];
 
 	// Don't forget to fill this array

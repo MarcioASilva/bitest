@@ -14,7 +14,7 @@ class PagesController extends Controller {
     foreach($selectDrodpdown as $rows)
     {
       // $rows->exported_date = Carbon::createFromFormat('Y-m-d H:i:s', $rows->exported_date)->format('jS F Y');
-      $rows->exported_date = Carbon::createFromTimeStamp(strtotime($rows->exported_date))->format('F Y');
+      $rows->exported_date = Carbon::createFromTimeStamp(strtotime($rows->exported_date)->format('jS F Y'););
 
       $trimmedDropdown[] = $rows;
     }
@@ -87,74 +87,91 @@ class PagesController extends Controller {
 
   // }
 
+
   public function getImportFile()
   {
-
-    //Imports spreadsheet into $spreadsheet
     $spreadsheet = Excel::load(public_path() . '/uploads/file_1k.csv')->get();
-    
-    $spreadsheetDataset[]='';
-    $counter1=0;
 
-    //puts dataset from $rows in to $spreadsheetDataset array
-    foreach ($spreadsheet as $rows) {
-      $spreadsheetDataset[$counter1] = $rows ->dataset;
-      $counter1++;
-      // $rows = $rows ->toArray();
-      // print $rows.'<br>';
-      // echo $rows;
+    $exported_date = [
+      'exported_date' => Carbon::now()->toDateTimeString()->format('jS F Y')
+    ];
+
+    $this->importRow($exported_date, 'ExportedDate');
+
+    // Insert lookuptables
+    foreach($spreadsheet as $row)
+    {
+
+      $dataset = [
+        'dataset' => $row->dataset
+      ];
+
+      $file_status = [
+        'file_status' => $row->file_status
+      ];
+
+      $peril = [
+        'peril' => $row->peril
+      ];
+
+      $reason = [
+        'reason' => $row->work_not_proceeding_reason
+      ];
+
+      $report_date = [
+        'report_date' => Carbon::now()->toDateTimeString()
+      ];
+
+      $xstatuses = [
+        'xstatuses' => $row->xactanalysis
+      ];
+
+      $records = [
+        'date_delivered'                     => $row->date_delivered,
+        'date_received'                      => $row->date_received,
+        'date_returned'                      => $row->date_returned,
+        'file_closed_date'                   => $row->file_closed_date,
+        'total'                              => $row->total,
+        'original_estimate_value'            => $row->original_estimate_value,
+        'received_to_delivered_working_days' => $row->received_to_delivered_working_days,
+        'received_to_returned_working_days'  => $row->received_to_returned_working_days,
+        'received_to_closed_working_days'    => $row->received_to_closed_working_days,
+        'dataset_id'                         => isset(Dataset::where('dataset', '=', $row->dataset)->first()->id) ? Dataset::where('dataset', '=', $row->dataset)->first()->id : null,
+        'xstatus_id'                         => isset(Xstatus::where('xact_analysis', '=', $row->xactanalysis)->first()->id) ? Xstatus::where('xact_analysis', '=', $row->xactanalysis)->first()->id : null,
+        'file_id'                            => isset(FileStatus::where('file_status', '=', $row->file_status)->first()->id) ? FileStatus::where('file_status', '=', $row->file_status)->first()->id : null,
+        'reason_id'                          => isset(Reason::where('work_not_proceeding_reason', '=', $row->work_not_proceeding_reason)->first()->id) ? Reason::where('work_not_proceeding_reason', '=', $row->work_not_proceeding_reason)->first()->id : null,
+        'peril_id'                           => isset(Peril::where('peril', '=', $row->peril)->first()->id) ? Peril::where('peril', '=', $row->peril)->first()->id : null,
+        'report_id'                          => 1,
+        'exported_date_id'                   => 1
+      ];
+
+      $this->importRow($dataset, 'Dataset');
+      $this->importRow($file_status, 'FileStatus');
+      $this->importRow($peril, 'Peril');
+      $this->importRow($reason, 'Reason');
+      $this->importRow($report_date, 'Report');
+      $this->importRow($xstatuses, 'Xstatus');
+      $this->importRow($records, 'Record');
     }
 
-    //remove duplicates Aarays
-    $spreadsheetDataset = array_unique($spreadsheetDataset);
-    // print_r($spreadsheetDataset);
-    
-    echo 'Resultes from Spreadsheet: '.'<br>';
-    foreach ($spreadsheetDataset as $key => $value) {
-      echo $value;
+    return Response::json([
+        'error'   => false,
+        'message' => 'File imported successfully'
+      ],
+      200
+    );
+
+  }
+
+
+  private function importRow($data, $model)
+  {
+    $validator = Validator::make($data, $model::$rules);
+
+    if(!$validator->fails())
+    {
+      $model::create($data);
     }
-
-
-
-    //Dataset from DB
-    $DB = Dataset::all();
-    
-    $DBDataset[]='';
-    $counter2=0;
-
-    //puts dataset from $rows in to $spreadsheetDataset array
-    foreach ($DB as $rows) {
-      $DBDataset[$counter2] = $rows ->dataset;
-      $counter2++;
-      // $rows = $rows ->toArray();
-      // print $rows.'<br>';
-      // echo $rows;
-    }
-
-    //remove duplicates Aarays
-    $DBDataset = array_unique($DBDataset);
-
-    //echo $DB;
-
-    echo '<br>'.'Resultes from DB: '.'<br>';
-    foreach ($DBDataset as $key => $value) {
-      echo $value;
-    }
-    // var_dump($DB);
-
-    //Compare results from DB x Spreadsheet
-
-    //call comparing method
-    for ($i=0; $i < sizeof($spreadsheetDataset); $i++) { 
-      if($spreadsheetDataset[1]<>$DBDataset[1])
-      {
-        // Dataset::create([
-        // 'dataset'=> $spreadsheetDataset[$i]
-        // ]);
-      echo $spreadsheetDataset[$i];
-      }
-    }
-
   }
 
 }

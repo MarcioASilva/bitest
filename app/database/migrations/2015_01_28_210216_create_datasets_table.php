@@ -17,7 +17,7 @@ class CreateDatasetsTable extends Migration {
 			$table->engine = 'InnoDB';
 
 			$table->increments('id');
-			$table->string('dataset');
+			$table->string('dataset')->unique();
 			$table->timestamps();
 			$table->softDeletes();
 		});
