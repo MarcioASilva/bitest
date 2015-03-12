@@ -17,7 +17,7 @@ class CreateFileStatusesTable extends Migration {
 			$table->engine = 'InnoDB';
 
 			$table->increments('id');
-			$table->string('file_status');
+			$table->string('file_status')->unique();
 			$table->timestamps();
 			$table->softDeletes();
 		});

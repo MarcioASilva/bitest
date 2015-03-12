@@ -8,7 +8,7 @@ class Xstatus extends \Eloquent {
 
   // Add your validation rules here
   public static $rules = [
-    'xact_analysis' => 'required'
+    'xact_analysis' => 'required|unique:xstatuses'
   ];
 
   // Don't forget to fill this array

@@ -17,7 +17,7 @@ class CreatePerilsTable extends Migration {
 			$table->engine = 'InnoDB';
 
 			$table->increments('id');
-			$table->string('peril');
+			$table->string('peril')->unique();
 			$table->timestamps();
 			$table->softDeletes();
 		});

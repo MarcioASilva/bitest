@@ -6,7 +6,7 @@ class Peril extends \Eloquent {
 
   // Add your validation rules here
 	public static $rules = [
-		'peril' => 'required'
+		'peril' => 'required|unique:perils'
 	];
 
 	// Don't forget to fill this array

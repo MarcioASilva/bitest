@@ -6,7 +6,7 @@ class Reason extends \Eloquent {
 
   // Add your validation rules here
 	public static $rules = [
-		'work_not_proceeding_reason' => 'required'
+		'work_not_proceeding_reason' => 'required|unique:reasons'
 	];
 
 	// Don't forget to fill this array

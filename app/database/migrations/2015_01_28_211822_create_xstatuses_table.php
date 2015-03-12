@@ -17,7 +17,7 @@ class CreateXstatusesTable extends Migration {
       $table->engine = 'InnoDB';
 
       $table->increments('id');
-      $table->string('xact_analysis');
+      $table->string('xact_analysis')->unique();
       $table->timestamps();
       $table->softDeletes();
     });

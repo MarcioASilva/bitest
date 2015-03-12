@@ -17,7 +17,7 @@ class CreateReasonsTable extends Migration {
 			$table->engine = 'InnoDB';
 
 			$table->increments('id');
-			$table->string('work_not_proceeding_Reason');
+			$table->string('work_not_proceeding_reason')->unique();
 			$table->timestamps();
 			$table->softDeletes();
 		});

@@ -3,7 +3,7 @@
 class ExportedDate extends \Eloquent {
 
   use SoftDeletingTrait;
-	
+
   // Add your validation rules here
 	public static $rules = [
     'exported_date' => 'required'

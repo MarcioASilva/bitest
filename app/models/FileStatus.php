@@ -6,7 +6,7 @@ class FileStatus extends \Eloquent {
 
   // Add your validation rules here
 	public static $rules = [
-    'file_status' => 'required'
+    'file_status' => 'required|unique:file_statuses'
 	];
 
 	// Don't forget to fill this array
