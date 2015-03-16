@@ -22,7 +22,7 @@ class CreateRecordsTable extends Migration {
 			$table->dateTime('date_returned')->nullable();
 			$table->dateTime('file_closed_date')->nullable();
 			$table->decimal('total');
-			$table->decimal('original_estimate_value');
+			$table->decimal('original_estimate_value')->nullable();
 			$table->decimal('received_to_delivered_working_days');
 			$table->decimal('received_to_returned_working_days');
 			$table->decimal('received_to_closed_working_days');
@@ -33,7 +33,7 @@ class CreateRecordsTable extends Migration {
 			$table->integer('file_status_id')->unsigned();
 			$table->foreign('file_status_id')->references('id')->on('file_statuses')->onDelete('cascade');
 			$table->integer('reason_id')->unsigned()->nullable();
-			// $table->foreign('reason_id')->references('id')->on('reasons')->onDelete('cascade');
+			$table->foreign('reason_id')->references('id')->on('reasons')->onDelete('cascade');
 			$table->integer('peril_id')->unsigned();
 			$table->foreign('peril_id')->references('id')->on('perils')->onDelete('cascade');
 			$table->integer('report_id')->unsigned();

@@ -6,7 +6,7 @@ class ExportedDate extends \Eloquent {
 
   // Add your validation rules here
 	public static $rules = [
-    'exported_date' => 'required'
+    'exported_date' => 'required|unique:exported_dates'
 	];
 
 	// Don't forget to fill this array

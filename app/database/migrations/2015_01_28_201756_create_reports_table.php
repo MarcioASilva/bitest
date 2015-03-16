@@ -17,7 +17,7 @@ class CreateReportsTable extends Migration {
 			$table->engine = 'InnoDB';
 
 			$table->increments('id');
-			$table->date('report_date')->unique();
+			$table->dateTime('report_date')->unique();
 			$table->timestamps();
 			$table->softDeletes();
 		});

@@ -6,7 +6,7 @@ class Report extends \Eloquent {
 
 	// Add your validation rules here
 	public static $rules = [
-		'report_date' => 'required'
+    'report_date' => 'required|unique:reports'
 	];
 
 	// Don't forget to fill this array
