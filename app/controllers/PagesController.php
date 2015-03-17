@@ -2,44 +2,39 @@
 
 class PagesController extends Controller {
 
-  private $dateTest;
-  
   private $reportDate;
-    
   private $exportedDate;
-
-  private $report_start_date_range;
-
-  private $report_end_date_range;
-  
-  private $previous_year;
-
-  private $current_year;
+  private $lastDayOfLastMonth;
+  private $lastDayOfLastYear;
+  private $firstDayOfThisYear;
+  private $firstDayOfLastYear;
 
 
-  public function __construct()
+  public function setDates($reportId)
   {
-    $this->dateTest = Carbon::now();
-    
-    $this->reportDate               = $this->dateTest->subMonth()->lastOfMonth();
-    
-    $this->exportedDate             = Carbon::now();
 
-    $this->report_start_date_range  = $this->dateTest->subYear()->startOfYear()->format('jS F Y');
+    $report = Report::find($reportId);
 
-    $this->report_end_date_range    = $this->dateTest->addMonth()->addYear()->addMonth()->lastOfMonth()->format('jS F Y');
-    
-    $this->previous_year            = $this->dateTest->subYear()->startOfYear()->format('Y');
+    $this->reportDate   = $report->report_date;
+    $this->exportedDate = $report->records->first()->exportedDate->exported_date;
 
-    $this->current_year             = $this->dateTest->addYear();
+    $this->lastDayOfLastMonth = Carbon::createFromTimeStamp(strtotime($report->report_date))
+      ->subMonth()->lastOfMonth()->toDateTimeString();
 
+    $this->lastDayOfLastYear = Carbon::createFromTimeStamp(strtotime($report->report_date))
+      ->subYear()->lastOfYear()->toDateTimeString();
+
+    $this->firstDayOfThisYear = Carbon::createFromTimeStamp(strtotime($report->report_date))
+      ->startOfYear()->toDateTimeString();
+
+    $this->firstDayOfLastYear = Carbon::createFromTimeStamp(strtotime($report->report_date))
+      ->subYear()->startOfYear()->toDateTimeString();
   }
 
   //Provides values for Dropdown menu
   public function getSelectDropdown()
   {
-    $selectDrodpdown = ExportedDate::orderBy('exported_date')->get();
-
+    $selectDrodpdown = Report::orderBy('report', 'desc')->get();
     $trimmedDropdown = [];
 
     foreach($selectDrodpdown as $rows)
@@ -50,15 +45,6 @@ class PagesController extends Controller {
       $trimmedDropdown[] = $rows->exported_date;
     }
 
-    // includes get
-    // all();
-    // first();
-    // find();
-
-    // does not include get
-    // orderBy()
-    // where()
-
     return Response::json([
         'error'   => false,
         'records' => $trimmedDropdown
@@ -67,57 +53,17 @@ class PagesController extends Controller {
     );
   }
 
-  //Provides dates for start and end of reporting period
-  // public function getDates($dropDownDate = 0)
-  // {
-    
-  //   if(!$dropDownDate)
-  //   {
-  //     $dropDownDate           = $this->dateTest
-  //   }
-
-  //   $reportDate               = $dropDownDate->subMonth()->lastOfMonth()->format('jS F Y');
-    
-  //   $exportedDate             = $dropDownDate->addMonth()->format('F Y');//ExportedDate::orderBy('exported_date', 'desc')->first()->exported_date;
-
-  //   $report_start_date_range  = $dropDownDate->subYear()->startOfYear()->format('jS F Y');
-
-  //   $report_end_date_range    = $dropDownDate->addMonth()->addYear()->addMonth()->lastOfMonth()->format('jS F Y');
-    
-  //   $previous_year            = $dropDownDate->subYear()->startOfYear()->format('Y');
-
-  //   $current_year            = $dropDownDate->addYear()->format('Y');
-
-  //   return Response::json([
-  //     'error'                     => false,
-  //     'report_date'               => $reportDate,
-  //     'exported_date'             => $exportedDate,//strtotime($exportedDate)
-  //     'report_start_date_range'   => $report_start_date_range,
-  //     'report_end_date_range'     => $report_end_date_range,
-  //     'previous_year'             => $previous_year,
-  //     'current_year'              => $current_year
-  //     ],
-  //     200
-  //   );
-  // }
-
 
   //Data for Cover page
   // bi.app/api/charts/cover-page
-  public function getCoverPage($getDates = 0)
+  public function getCoverPage($reportId)
   {
-    
-    // $reportDate   = Carbon::createFromFormat('Y-m-d H:i:s', $exportedDate)
-    //   ->subMonth()
-    //   ->lastOfMonth()
-    //   ->format('jS F Y');
-
-
+    $this->setDates($reportId);
 
     return Response::json([
         'error'   => false,
         'records' => [
-          'report_date'   => $this->reportDate,
+          'last_year'   => $this->reportDate,
           'exported_date' => $this->exportedDate
         ]
       ],
@@ -125,38 +71,72 @@ class PagesController extends Controller {
     );
   }
 
-
   // /api/charts/page1
-  public function getVolumeSummaryTable()
+  public function getPage1($reportId)
   {
+    // Set the dates for late usage
+    $this->setDates($reportId);
 
-    $previous_year_records    = Record::where('id','=','1')->get(); //chain more
+    // Set some data placeholders
+    $previous_year_records = [];
+    $current_year_records  = [];
 
+    // Get the totals
+    $previous_yearTotal = Record::whereBetween(
+      'date_received',
+      [$this->firstDayOfLastYear, $this->lastDayOfLastYear])->count();
+
+    $current_yearTotal = Record::whereBetween(
+      'date_received',
+      [$this->firstDayOfThisYear, $this->lastDayOfLastMonth])->count();
+
+    // Get the data
+    $previousYearData = Record::select('*', DB::raw('count(*) as total'))
+      ->whereBetween('date_received', [$this->firstDayOfLastYear, $this->lastDayOfLastYear])
+      ->groupBy('dataset_id')
+      ->get();
+
+    $currentYearData = Record::select('*', DB::raw('count(*) as total'))
+      ->whereBetween('date_received', [$this->firstDayOfThisYear, $this->lastDayOfLastMonth])
+      ->groupBy('dataset_id')
+      ->get();
+
+    // Build the final arrays
+    foreach($previousYearData as $row)
+    {
+      $data = [];
+
+      $data['dataset'] = $row->dataset->dataset;
+      $data['count']   = $row->total;
+      $data['perc']    = round((float)($row->total / $previous_yearTotal) * 100 ) . '%';
+
+      $previous_year_records[] = $data;
+    }
+
+    foreach($currentYearData as $row)
+    {
+      $data = [];
+
+      $data['dataset'] = $row->dataset->dataset;
+      $data['count']   = $row->total;
+      $data['perc']    = round((float)($row->total / $current_yearTotal) * 100 ) . '%';
+
+      $current_year_records[] = $data;
+    }
+
+    // Return everything
     return Response::json([
         'error'                 => false,
-        'previous_year'         => $this->previous_year,
-        'previous_year_records' => $previous_year_records->toArray(),
-        'current_year'          => $this->$current_year
-
+        'previous_year'         => $this->lastDayOfLastYear,
+        'previous_year_records' => $previous_year_records,
+        'current_year'          => $this->firstDayOfThisYear,
+        'current_year_records'  => $current_year_records,
+        'previous_year_total'   => $previous_yearTotal,
+        'current_year_total'    => $current_yearTotal,
       ],
       200
     );
   }
-
-  // public function getImportFile()
-  // {
-
-  //   $spreadsheet = Excel::load(public_path() . '/uploads/file_1k.csv')->get();
-
-  //   foreach ($spreadsheet as $rows) {
-  //     Dataset::create([
-  //       'dataset'=> $rows->dataset
-  //     ]);
-  //   }
-
-  //   var_dump('dataset entered');
-
-  // }
 
 
   public function getImportFile()

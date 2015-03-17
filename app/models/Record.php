@@ -74,7 +74,7 @@ class Record extends \Eloquent {
 		return $this->belongsTo('Xstatus');
 	}
 
-	public function exported_dates()
+	public function exportedDate()
 	{
 		return $this->belongsTo('ExportedDate');
 	}
