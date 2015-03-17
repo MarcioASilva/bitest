@@ -34,8 +34,9 @@ class PagesController extends Controller {
   //Provides values for Dropdown menu
   public function getSelectDropdown()
   {
-    $selectDrodpdown = Report::orderBy('report', 'desc')->get();
+    $selectDrodpdown = Report::orderBy('report_date', 'desc')->get();
     $trimmedDropdown = [];
+    dd($selectDrodpdown);
 
     foreach($selectDrodpdown as $rows)
     {
