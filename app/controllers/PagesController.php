@@ -138,7 +138,7 @@ class PagesController extends Controller {
     );
   }
 
-    // /api/charts/page1
+  // /api/charts/page1
   public function getPage2($reportId)
   {
     // Set the dates for late usage
@@ -158,7 +158,7 @@ class PagesController extends Controller {
     foreach($previousYearData as $row)
     {
       $data = [];
-      $data['date_received'] = Carbon::createFromTimeStamp(strtotime($row->date_received))->format('M');
+      $data['month'] = Carbon::createFromTimeStamp(strtotime($row->date_received))->format('M');
       $data['count']         = $row->total;
       $previous_year_records[] = $data;
     }
@@ -168,22 +168,81 @@ class PagesController extends Controller {
     //   ->groupBy(DB::raw('asdfadsf'))
     //   ->get();
 
-    dd($previous_year_records);
+    // dd($previous_year_records);
 
-    $currentYearData = Record::select('*', DB::raw('count(*) as total'))
-      ->whereBetween('date_received', [$this->firstDayOfThisYear, $this->lastDayOfLastMonth])
-      ->groupBy('date_received')
+    // $currentYearData = Record::select('*', DB::raw('count(*) as total'))
+    //   ->whereBetween('date_received', [$this->firstDayOfThisYear, $this->lastDayOfLastMonth])
+    //   ->groupBy('date_received')
+    //   ->get();
+
+    // foreach($currentYearData as $row)
+    // {
+    //   $data = [];
+
+    //   $data['dataset'] = $row->dataset->dataset;
+    //   $data['count']   = $row->total;
+
+    //   $current_year_records[] = $data;
+    // }
+
+    //Return everything
+    return Response::json([
+        'error'                 => false,
+        'previous_year'         => Carbon::createFromTimeStamp(strtotime($this->lastDayOfLastYear))->format('Y'),
+        'previous_year_records' => $previous_year_records,
+        'current_year'          => Carbon::createFromTimeStamp(strtotime($this->firstDayOfThisYear))->format('Y'),
+        'current_year_records'  => $current_year_records,
+      ],
+      200
+    );
+  }
+
+  // /api/charts/line-chart
+  public function getLineChart($reportId)
+  {
+    // Set the dates for late usage
+    $this->setDates($reportId);
+
+    // Set some data placeholders
+    $previous_year_records = [];
+    $current_year_records  = [];
+    
+    // Get the data
+    $previousYearData = Record::select('*', DB::raw('count(*) as total'))
+      ->whereBetween('date_received', [$this->firstDayOfLastYear, $this->lastDayOfLastYear])
+      ->groupBy(DB::raw('MONTH(date_received)'))
       ->get();
 
-    foreach($currentYearData as $row)
+    // Build the final arrays
+    foreach($previousYearData as $row)
     {
       $data = [];
-
-      $data['dataset'] = $row->dataset->dataset;
-      $data['count']   = $row->total;
-
-      $current_year_records[] = $data;
+      $data['month'] = Carbon::createFromTimeStamp(strtotime($row->date_received))->format('M');
+      $data['count']         = $row->total;
+      $previous_year_records[] = $data;
     }
+
+    // Record::select(DB::raw('*'))
+    //   ->whereRaw('asdfasdf > asdfasdf')
+    //   ->groupBy(DB::raw('asdfadsf'))
+    //   ->get();
+
+    // dd($previous_year_records);
+
+    // $currentYearData = Record::select('*', DB::raw('count(*) as total'))
+    //   ->whereBetween('date_received', [$this->firstDayOfThisYear, $this->lastDayOfLastMonth])
+    //   ->groupBy('date_received')
+    //   ->get();
+
+    // foreach($currentYearData as $row)
+    // {
+    //   $data = [];
+
+    //   $data['dataset'] = $row->dataset->dataset;
+    //   $data['count']   = $row->total;
+
+    //   $current_year_records[] = $data;
+    // }
 
     //Return everything
     return Response::json([
