@@ -9,80 +9,81 @@ class PagesController extends Controller {
   private $firstDayOfThisYear;
   private $firstDayOfLastYear;
 
-    public function getImportFile()
+  public function getImportFile()
   {
-    $spreadsheet = Excel::load(public_path() . '/uploads/file_less_columns.csv')->get();
+    // $spreadsheet = Excel::load(public_path() . '/uploads/file_less_columns.csv')->get();
 
-    $report_date = [
-      'report_date' => Carbon::now()->toDateTimeString()
-    ];
+    Excel::load(public_path() . '/uploads/file_less_columns.csv', function($spreadsheet) {
 
-    $exported_date = [
-      'exported_date' => Carbon::now()->toDateTimeString()
-    ];
-
-    $reportDateId   = $this->importRow($report_date, 'Report')->id;
-    $exportedDateId = $this->importRow($exported_date, 'ExportedDate')->id;
-
-    // Insert lookuptables
-    foreach($spreadsheet as $row)
-    {
-      $dataset = [
-        'dataset' => $row->dataset
+      $report_date = [
+        'report_date' => Carbon::now()->toDateTimeString()
       ];
 
-      $file_status = [
-        'file_status' => $row->file_status
+      $exported_date = [
+        'exported_date' => Carbon::now()->toDateTimeString()
       ];
 
-      $peril = [
-        'peril' => $row->peril
-      ];
+      $reportDateId   = $this->importRow($report_date, 'Report')->id;
+      $exportedDateId = $this->importRow($exported_date, 'ExportedDate')->id;
 
-      $reason = [
-        'work_not_proceeding_reason' => $row->work_not_proceeding_reason
-      ];
+      dd($spreadsheet);
 
-      $xstatuses = [
-        'xact_analysis' => $row->xactanalysis
-      ];
+      // Insert lookuptables
+      foreach($spreadsheet as $row)
+      {
+        $dataset = [
+          'dataset' => $row->dataset
+        ];
 
-      $this->importRow($dataset, 'Dataset');
-      $this->importRow($file_status, 'FileStatus');
-      $this->importRow($peril, 'Peril');
-      $this->importRow($reason, 'Reason');
-      $this->importRow($xstatuses, 'Xstatus');
-    }
+        $file_status = [
+          'file_status' => $row->file_status
+        ];
 
-    $counter = 0;
-    foreach($spreadsheet as $row)
-    {
-      dd($row);
+        $peril = [
+          'peril' => $row->peril
+        ];
 
-      $records = [
-        'date_delivered'                     => $this->transformDate($row->date_delivered),
-        'date_received'                      => $this->transformDate($row->date_received),
-        'date_returned'                      => $this->transformDate($row->date_returned),
-        'file_closed_date'                   => $this->transformDate($row->file_closed_date),
-        'total'                              => $row->total,
-        'original_estimate_value'            => $row->original_estimate_value,
-        'received_to_delivered_working_days' => $row->received_to_delivered_working_days,
-        'received_to_returned_working_days'  => $row->received_to_returned_working_days,
-        'received_to_closed_working_days'    => $row->received_to_closed_working_days,
-        'dataset_id'                         => isset(Dataset::where('dataset', '=', $row->dataset)->first()->id) ? Dataset::where('dataset', '=', $row->dataset)->first()->id : null,
-        'xstatus_id'                         => isset(Xstatus::where('xact_analysis', '=', $row->xactanalysis)->first()->id) ? Xstatus::where('xact_analysis', '=', $row->xactanalysis)->first()->id : null,
-        'file_status_id'                     => isset(FileStatus::where('file_status', '=', $row->file_status)->first()->id) ? FileStatus::where('file_status', '=', $row->file_status)->first()->id : null,
-        'reason_id'                          => isset(Reason::where('work_not_proceeding_reason', '=', $row->work_not_proceeding_reason)->first()->id) ? Reason::where('work_not_proceeding_reason', '=', $row->work_not_proceeding_reason)->first()->id : null,
-        'peril_id'                           => isset(Peril::where('peril', '=', $row->peril)->first()->id) ? Peril::where('peril', '=', $row->peril)->first()->id : null,
-        'report_id'                          => $reportDateId,
-        'exported_date_id'                   => $exportedDateId
-      ];
+        $reason = [
+          'work_not_proceeding_reason' => $row->work_not_proceeding_reason
+        ];
 
-      $this->importRow($records, 'Record');
+        $xstatuses = [
+          'xact_analysis' => $row->xactanalysis
+        ];
 
-      echo $counter;
-      $counter++;
-    }
+        $this->importRow($dataset, 'Dataset');
+        $this->importRow($file_status, 'FileStatus');
+        $this->importRow($peril, 'Peril');
+        $this->importRow($reason, 'Reason');
+        $this->importRow($xstatuses, 'Xstatus');
+      }
+
+      dd('hi yo');
+
+      foreach($spreadsheet as $row)
+      {
+        $records = [
+          'date_delivered'                     => $this->transformDate($row->date_delivered),
+          'date_received'                      => $this->transformDate($row->date_received),
+          'date_returned'                      => $this->transformDate($row->date_returned),
+          'file_closed_date'                   => $this->transformDate($row->file_closed_date),
+          'total'                              => $row->total,
+          'original_estimate_value'            => $row->original_estimate_value,
+          'received_to_delivered_working_days' => $row->received_to_delivered_working_days,
+          'received_to_returned_working_days'  => $row->received_to_returned_working_days,
+          'received_to_closed_working_days'    => $row->received_to_closed_working_days,
+          'dataset_id'                         => isset(Dataset::where('dataset', '=', $row->dataset)->first()->id) ? Dataset::where('dataset', '=', $row->dataset)->first()->id : null,
+          'xstatus_id'                         => isset(Xstatus::where('xact_analysis', '=', $row->xactanalysis)->first()->id) ? Xstatus::where('xact_analysis', '=', $row->xactanalysis)->first()->id : null,
+          'file_status_id'                     => isset(FileStatus::where('file_status', '=', $row->file_status)->first()->id) ? FileStatus::where('file_status', '=', $row->file_status)->first()->id : null,
+          'reason_id'                          => isset(Reason::where('work_not_proceeding_reason', '=', $row->work_not_proceeding_reason)->first()->id) ? Reason::where('work_not_proceeding_reason', '=', $row->work_not_proceeding_reason)->first()->id : null,
+          'peril_id'                           => isset(Peril::where('peril', '=', $row->peril)->first()->id) ? Peril::where('peril', '=', $row->peril)->first()->id : null,
+          'report_id'                          => $reportDateId,
+          'exported_date_id'                   => $exportedDateId
+        ];
+
+        $this->importRow($records, 'Record'); 
+      }
+    });
 
     return Response::json([
         'error'   => false,
