@@ -9,7 +9,90 @@ class PagesController extends Controller {
   private $firstDayOfThisYear;
   private $firstDayOfLastYear;
 
+    public function getImportFile()
+  {
+    $spreadsheet = Excel::load(public_path() . '/uploads/file_less_columns.csv')->get();
 
+    $report_date = [
+      'report_date' => Carbon::now()->toDateTimeString()
+    ];
+
+    $exported_date = [
+      'exported_date' => Carbon::now()->toDateTimeString()
+    ];
+
+    $reportDateId   = $this->importRow($report_date, 'Report')->id;
+    $exportedDateId = $this->importRow($exported_date, 'ExportedDate')->id;
+
+    // Insert lookuptables
+    foreach($spreadsheet as $row)
+    {
+      $dataset = [
+        'dataset' => $row->dataset
+      ];
+
+      $file_status = [
+        'file_status' => $row->file_status
+      ];
+
+      $peril = [
+        'peril' => $row->peril
+      ];
+
+      $reason = [
+        'work_not_proceeding_reason' => $row->work_not_proceeding_reason
+      ];
+
+      $xstatuses = [
+        'xact_analysis' => $row->xactanalysis
+      ];
+
+      $this->importRow($dataset, 'Dataset');
+      $this->importRow($file_status, 'FileStatus');
+      $this->importRow($peril, 'Peril');
+      $this->importRow($reason, 'Reason');
+      $this->importRow($xstatuses, 'Xstatus');
+    }
+
+    $counter = 0;
+    foreach($spreadsheet as $row)
+    {
+      dd($row);
+
+      $records = [
+        'date_delivered'                     => $this->transformDate($row->date_delivered),
+        'date_received'                      => $this->transformDate($row->date_received),
+        'date_returned'                      => $this->transformDate($row->date_returned),
+        'file_closed_date'                   => $this->transformDate($row->file_closed_date),
+        'total'                              => $row->total,
+        'original_estimate_value'            => $row->original_estimate_value,
+        'received_to_delivered_working_days' => $row->received_to_delivered_working_days,
+        'received_to_returned_working_days'  => $row->received_to_returned_working_days,
+        'received_to_closed_working_days'    => $row->received_to_closed_working_days,
+        'dataset_id'                         => isset(Dataset::where('dataset', '=', $row->dataset)->first()->id) ? Dataset::where('dataset', '=', $row->dataset)->first()->id : null,
+        'xstatus_id'                         => isset(Xstatus::where('xact_analysis', '=', $row->xactanalysis)->first()->id) ? Xstatus::where('xact_analysis', '=', $row->xactanalysis)->first()->id : null,
+        'file_status_id'                     => isset(FileStatus::where('file_status', '=', $row->file_status)->first()->id) ? FileStatus::where('file_status', '=', $row->file_status)->first()->id : null,
+        'reason_id'                          => isset(Reason::where('work_not_proceeding_reason', '=', $row->work_not_proceeding_reason)->first()->id) ? Reason::where('work_not_proceeding_reason', '=', $row->work_not_proceeding_reason)->first()->id : null,
+        'peril_id'                           => isset(Peril::where('peril', '=', $row->peril)->first()->id) ? Peril::where('peril', '=', $row->peril)->first()->id : null,
+        'report_id'                          => $reportDateId,
+        'exported_date_id'                   => $exportedDateId
+      ];
+
+      $this->importRow($records, 'Record');
+
+      echo $counter;
+      $counter++;
+    }
+
+    return Response::json([
+        'error'   => false,
+        'message' => 'File imported successfully'
+      ],
+      200
+    );
+
+  }
+  
   public function setDates($reportId)
   {
 
@@ -82,7 +165,7 @@ class PagesController extends Controller {
 
      // // Part 1
     $recordsPart1 = Record::groupBy('file_status')
-      whereBetween('date_received', [$startOfRange, $endOfRange])
+      ->whereBetween('date_received', [$startOfRange, $endOfRange])
       ->get([
         DB::raw('file_status'),
         DB::raw('COUNT(dataset_id) as count')
@@ -91,7 +174,7 @@ class PagesController extends Controller {
 
     // // Part 2
     $recordsPart2 = Record::groupBy('work_not_proceeding_reason')
-      whereBetween('date_received', [$startOfRange, $endOfRange])
+      ->whereBetween('date_received', [$startOfRange, $endOfRange])
       ->where('file_status_id', $fileStatus)
       ->get([
         DB::raw('work_not_proceeding_reason as reason'),
@@ -280,85 +363,6 @@ class PagesController extends Controller {
       200
     );
   }
-
-  public function getImportFile()
-  {
-    $spreadsheet = Excel::load(public_path() . '/uploads/file_1k.csv')->get();
-
-    $report_date = [
-      'report_date' => Carbon::now()->toDateTimeString()
-    ];
-
-    $exported_date = [
-      'exported_date' => Carbon::now()->toDateTimeString()
-    ];
-
-    $reportDateId   = $this->importRow($report_date, 'Report')->id;
-    $exportedDateId = $this->importRow($exported_date, 'ExportedDate')->id;
-
-    // Insert lookuptables
-    foreach($spreadsheet as $row)
-    {
-      $dataset = [
-        'dataset' => $row->dataset
-      ];
-
-      $file_status = [
-        'file_status' => $row->file_status
-      ];
-
-      $peril = [
-        'peril' => $row->peril
-      ];
-
-      $reason = [
-        'work_not_proceeding_reason' => $row->work_not_proceeding_reason
-      ];
-
-      $xstatuses = [
-        'xact_analysis' => $row->xactanalysis
-      ];
-
-      $this->importRow($dataset, 'Dataset');
-      $this->importRow($file_status, 'FileStatus');
-      $this->importRow($peril, 'Peril');
-      $this->importRow($reason, 'Reason');
-      $this->importRow($xstatuses, 'Xstatus');
-    }
-
-    foreach($spreadsheet as $row)
-    {
-      $records = [
-        'date_delivered'                     => $this->transformDate($row->date_delivered),
-        'date_received'                      => $this->transformDate($row->date_received),
-        'date_returned'                      => $this->transformDate($row->date_returned),
-        'file_closed_date'                   => $this->transformDate($row->file_closed_date),
-        'total'                              => $row->total,
-        'original_estimate_value'            => $row->original_estimate_value,
-        'received_to_delivered_working_days' => $row->received_to_delivered_working_days,
-        'received_to_returned_working_days'  => $row->received_to_returned_working_days,
-        'received_to_closed_working_days'    => $row->received_to_closed_working_days,
-        'dataset_id'                         => isset(Dataset::where('dataset', '=', $row->dataset)->first()->id) ? Dataset::where('dataset', '=', $row->dataset)->first()->id : null,
-        'xstatus_id'                         => isset(Xstatus::where('xact_analysis', '=', $row->xactanalysis)->first()->id) ? Xstatus::where('xact_analysis', '=', $row->xactanalysis)->first()->id : null,
-        'file_status_id'                     => isset(FileStatus::where('file_status', '=', $row->file_status)->first()->id) ? FileStatus::where('file_status', '=', $row->file_status)->first()->id : null,
-        'reason_id'                          => isset(Reason::where('work_not_proceeding_reason', '=', $row->work_not_proceeding_reason)->first()->id) ? Reason::where('work_not_proceeding_reason', '=', $row->work_not_proceeding_reason)->first()->id : null,
-        'peril_id'                           => isset(Peril::where('peril', '=', $row->peril)->first()->id) ? Peril::where('peril', '=', $row->peril)->first()->id : null,
-        'report_id'                          => $reportDateId,
-        'exported_date_id'                   => $exportedDateId
-      ];
-
-      $this->importRow($records, 'Record');
-    }
-
-    return Response::json([
-        'error'   => false,
-        'message' => 'File imported successfully'
-      ],
-      200
-    );
-
-  }
-
 
   private function importRow($data, $model)
   {

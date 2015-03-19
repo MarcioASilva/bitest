@@ -6,22 +6,22 @@ class Record extends \Eloquent {
 
 	// Add your validation rules here
 	public static $rules = [
-		'date_delivered'                     => 'date_format:"Y-m-d H:i:s"',
-		'date_received'                      => 'date_format:"Y-m-d H:i:s"',
-		'date_returned'                      => 'date_format:"Y-m-d H:i:s"',
-		'file_closed_date'                   => 'date_format:"Y-m-d H:i:s"',
-		'total'                              => 'numeric',
-		'original_estimate_value'            => 'numeric',
-		'received_to_delivered_working_days' => 'numeric',
-		'received_to_returned_working_days'  => 'numeric',
-		'received_to_closed_working_days'    => 'numeric',
-		'dataset_id'                         => 'required|integer',
-		'xstatus_id'                         => 'required|integer',
-		'file_status_id'                     => 'required|integer',
-		'reason_id'                          => 'integer',
-		'peril_id'                           => 'required|integer',
-		'report_id'                          => 'required|integer',
-		'exported_date_id'                   => 'required|integer'
+		// 'date_delivered'                     => 'date_format:"Y-m-d H:i:s"',
+		// 'date_received'                      => 'date_format:"Y-m-d H:i:s"',
+		// 'date_returned'                      => 'date_format:"Y-m-d H:i:s"',
+		// 'file_closed_date'                   => 'date_format:"Y-m-d H:i:s"',
+		// 'total'                              => 'numeric',
+		// 'original_estimate_value'            => 'numeric',
+		// 'received_to_delivered_working_days' => 'numeric',
+		// 'received_to_returned_working_days'  => 'numeric',
+		// 'received_to_closed_working_days'    => 'numeric',
+		// 'dataset_id'                         => 'required|integer',
+		// 'xstatus_id'                         => 'required|integer',
+		// 'file_status_id'                     => 'required|integer',
+		// 'reason_id'                          => 'integer',
+		// 'peril_id'                           => 'required|integer',
+		// 'report_id'                          => 'required|integer',
+		// 'exported_date_id'                   => 'required|integer'
 	];
 
 	// Don't forget to fill this array
