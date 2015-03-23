@@ -6,7 +6,7 @@ class Record extends \Eloquent {
 
 	// Add your validation rules here
 	public static $rules = [
-		// 'date_delivered'                     => 'date_format:"Y-m-d H:i:s"',
+		'date_delivered'                     => 'date_format:"Y-m-d H:i:s"',
 		// 'date_received'                      => 'date_format:"Y-m-d H:i:s"',
 		// 'date_returned'                      => 'date_format:"Y-m-d H:i:s"',
 		// 'file_closed_date'                   => 'date_format:"Y-m-d H:i:s"',
