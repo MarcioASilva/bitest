@@ -10,21 +10,13 @@ class PagesController extends Controller {
   private $firstDayOfLastYear;
 
 
-  // public function getNotsureyet()
-  // {
-  //   Excel::filter('chunk')->load(public_path().'/uploads/file_less_columns_Full.csv')->chunk(50000, function($results)
-  //   {
-
-  //   });
-  // }
-
   public function getImportFile()
   {
-    echo 'will load the ting <br>';
+    // echo 'will load the ting <br>';
 
     $spreadsheet = Excel::load(public_path() . '/uploads/file_less_columns_Full.csv')->get();
 
-    echo 'spreadsheet loaded <br>';
+    // echo 'spreadsheet loaded <br>';
 
     $report_date = [
       'report_date' => Carbon::now()->toDateTimeString()
@@ -37,13 +29,12 @@ class PagesController extends Controller {
     $reportDateId   = $this->importRow($report_date, 'Report')->id;
     $exportedDateId = $this->importRow($exported_date, 'ExportedDate')->id;
 
-    dd($reportDateId);
     echo 'before first loop <br>';
 
     // Insert lookuptables
     foreach($spreadsheet as $key => $row)
     {
-      echo '_ ' . ($key + 1) . '<br>';
+      // echo '_ ' . ($key + 1) . '<br>';
 
       $dataset = [
         'dataset' => $row->dataset
@@ -74,9 +65,9 @@ class PagesController extends Controller {
 
     echo 'before second loop <br>';
 
-    foreach($spreadsheet as $row)
+    foreach($spreadsheet as $key => $row)
     {
-      echo '_ ' . ($key + 1) . '<br>';
+      // echo '_ ' . ($key + 1) . '<br>';
 
       $records = [
         'date_delivered'                     => $this->transformDate($row->date_delivered),
@@ -173,11 +164,11 @@ class PagesController extends Controller {
     // Set the dates for late usage
     $this->setDates($reportId);
 
-    // // Set some data placeholders
+    // Set some data placeholders
     $recordsPart1 = [];
     $recordsPart2 = [];
 
-     // // Part 1
+     // Part 1
     $recordsPart1 = Record::groupBy('file_status')
       ->whereBetween('date_received', [$startOfRange, $endOfRange])
       ->get([
@@ -186,7 +177,7 @@ class PagesController extends Controller {
       ]);
 
 
-    // // Part 2
+    // Part 2
     $recordsPart2 = Record::groupBy('work_not_proceeding_reason')
       ->whereBetween('date_received', [$startOfRange, $endOfRange])
       ->where('file_status_id', $fileStatus)
