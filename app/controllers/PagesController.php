@@ -57,13 +57,18 @@ class PagesController extends Controller {
         'error'                 => false,
         'previous_year'         => $this->extractYear($this->lastDayOfLastYear),
         'previous_year_records' => $this->prepareArray($previousYearData),
-        'previous_year_total'   => $this->duplicateTotal($this->firstDayOfLastYear, $this->lastDayOfLastYear),
+        'previous_year_total'   => $this->yearTotal($this->firstDayOfLastYear, $this->lastDayOfLastYear),
         'current_year'          => $this->extractYear($this->firstDayOfThisYear),
         'current_year_records'  => $this->prepareArray($currentYearData),
-        'current_year_total'    => $this->duplicateTotal($this->firstDayOfThisYear, $this->lastDayOfLastMonth),
+        'current_year_total'    => $this->yearTotal($this->firstDayOfThisYear, $this->lastDayOfLastMonth),
       ],
       200
     );
+  }
+
+  public function getPage3($reportId)
+  {
+
   }
 
 
@@ -176,29 +181,59 @@ class PagesController extends Controller {
 
   private function totalsByName($start, $end)
   {
-    return Record::select('*', DB::raw('count(*) as total'))
+
+      return Record::groupBy('dataset_id')
       ->whereBetween('date_received', [$start, $end])
-      ->groupBy('dataset_id')
-      ->get();
+      ->get([
+        DB::raw('dataset_id'),
+        DB::raw('COUNT(dataset_id) as total')
+      ]);
   }
 
   private function prepareArray($data)
   {
-    
-    $sum = 0;
-
-    foreach ($data as $value) {
-      $sum = $sum + $value->total;
-    }
+    $sum        = 0;
+    $returnData = [];
 
     foreach($data as $row)
     {
-      $data['dataset'] = $row->dataset;
-      $data['count']   = $row->total;
-      $data['perc']    = round((($row->total / $sum) * 100),3) . '%';
+      $sum += $row->total;
     }
 
-    return $data;
+    foreach($data as $key => $row)
+    {
+      $returnData[$key]['dataset'] = $row->dataset->dataset;
+      $returnData[$key]['count']   = number_format($row->total);
+      $returnData[$key]['perc']    = $this->sortRounding(($row->total / $sum) * 100) . '%';
+    }
+
+    return $returnData;
+  }
+
+  private function sortRounding($float)
+  {
+    $arr = $float;
+
+    $arr = str_split($arr);
+
+    if ($arr[0]==0 && $arr[1]==0 && $arr[2]==0)
+    {
+      $float = round($float, 4);
+    }
+
+    if ($arr[0]==0 && $arr[1]==0)
+    {
+      $float = round($float, 3);
+    }
+    
+    if ($arr[0]==0)
+    {
+      $float = round($float, 2);
+    }
+    else
+     $float = round($float, 0); 
+
+    return $float;
   }
 
 
@@ -207,7 +242,7 @@ class PagesController extends Controller {
     return Carbon::createFromTimeStamp(strtotime($date))->format('Y');
   }
 
-  private function duplicateTotal($start, $end)
+  private function yearTotal($start, $end)
   {
     $count = Record::whereBetween('date_received', [$start, $end])->count();
     return number_format($count);
