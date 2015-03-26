@@ -49,17 +49,17 @@ class PagesController extends Controller {
     $this->setDates($reportId);
 
     // Get the data
-    $previousYearData = $this->totalsByName($this->firstDayOfLastYear, $this->lastDayOfLastYear);
-    $currentYearData  = $this->totalsByName($this->firstDayOfThisYear, $this->lastDayOfLastMonth);
+    $previousYearData = $this->groupAndCount($this->firstDayOfLastYear, $this->lastDayOfLastYear);
+    $currentYearData  = $this->groupAndCount($this->firstDayOfThisYear, $this->lastDayOfLastMonth);
 
     // Return everything
     return Response::json([
         'error'                 => false,
         'previous_year'         => $this->extractYear($this->lastDayOfLastYear),
-        'previous_year_records' => $this->prepareArray($previousYearData),
+        'previous_year_records' => $this->calculatePercentage($previousYearData),
         'previous_year_total'   => $this->yearTotal($this->firstDayOfLastYear, $this->lastDayOfLastYear),
         'current_year'          => $this->extractYear($this->firstDayOfThisYear),
-        'current_year_records'  => $this->prepareArray($currentYearData),
+        'current_year_records'  => $this->calculatePercentage($currentYearData),
         'current_year_total'    => $this->yearTotal($this->firstDayOfThisYear, $this->lastDayOfLastMonth),
       ],
       200
@@ -68,7 +68,22 @@ class PagesController extends Controller {
 
   public function getPage3($reportId)
   {
+    $this->setDates($reportId);
+    
+    // Get the data
+    $previousYearData = $this->groupByMonth($this->firstDayOfLastYear, $this->lastDayOfLastYear);
+    $currentYearData  = $this->groupByMonth($this->firstDayOfThisYear, $this->lastDayOfLastMonth);
 
+    // Return everything
+    return Response::json([
+        'error'                 => false,
+        'previous_year'         => $this->extractYear($this->lastDayOfLastYear),
+        // 'previous_year_records' => $this->calculatePercentage($previousYearData),
+        'current_year'          => $this->extractYear($this->firstDayOfThisYear),
+        // 'current_year_records'  => $this->calculatePercentage($currentYearData),
+      ],
+      200
+    );
   }
 
 
@@ -179,7 +194,7 @@ class PagesController extends Controller {
       ->subYear()->startOfYear()->toDateTimeString();
   }
 
-  private function totalsByName($start, $end)
+  private function groupAndCount($start, $end)
   {
 
       return Record::groupBy('dataset_id')
@@ -190,7 +205,47 @@ class PagesController extends Controller {
       ]);
   }
 
-  private function prepareArray($data)
+  
+  private function groupByMonth($start, $end)
+  {
+    // Set some data placeholders
+    $records = [];
+
+    $query = Record::groupBy('month')
+    ->whereBetween('date_received', [$start, $end])
+    ->where(function($datasetArray)
+    {
+      foreach($datasetArray as $item)
+      {
+        $datasetArray->orWhere('dataset_id', '=', $item);
+      }
+    })
+    ->get([
+      DB::raw('MONTH(date_received) as month'),
+      DB::raw('COUNT(dataset_id) as count')
+    ]);
+
+      // Build the final arrays
+    foreach($query as $row)
+    {
+
+      $data = [];
+      $data['month'] = Carbon::createFromTimeStamp(strtotime($row->month))->format('M');
+      $data['count'] = number_format($row->count);
+      
+      $records[] = $data;
+    }
+
+    //Return everything
+    return Response::json([
+        'error'     => false,
+        'api_data'  => $records,
+      ],
+      200
+    );
+  }
+
+  private function calculatePercentage($data)
   {
     $sum        = 0;
     $returnData = [];
