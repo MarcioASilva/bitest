@@ -6,12 +6,16 @@ class Dataset extends \Eloquent {
 
 	// Add your validation rules here
 	public static $rules = [
-		'dataset' => 'required|unique:datasets'
+		'dataset'       => 'required|unique:datasets'
+    'group'         => 'required',
+    'friendly_name' => 'required',
 	];
 
 	// Don't forget to fill this array
 	protected $fillable = [
-		'dataset'
+		'dataset',
+    'group',
+    'friendly_name',
 	];
 
   public function records()
