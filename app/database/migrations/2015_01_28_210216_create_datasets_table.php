@@ -18,7 +18,7 @@ class CreateDatasetsTable extends Migration {
 
 			$table->increments('id');
 			$table->string('dataset')->unique();
-			$table->string('group');
+			$table->integer('group');
 			$table->string('friendly_name');
 			$table->timestamps();
 			$table->softDeletes();
