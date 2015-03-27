@@ -15,15 +15,50 @@ class ImportController extends Controller {
             ''
           ]
 
-AXA - CL Oriel
+// Name  Hierarchy
+// AXA - Desktop      1
+// AXA - BVS          2
+// AXA - Imperial     3
+// AXA - GAB          4
+// AXA - CL           5
+// AXA - GAB WNS      7
+// AXA - CL WNS       6
+// AXA - WNS 8
+// AXA - Imperial WNS 8
+// AXA - BVS WNS      8
+// AXA - GAB BRICS    9
+// AXA - CL Oriel     10
 
-AXA - GAB BRICS
-AXA - BVS WNS
-AXA - Imperial
+// Name  Grouping
+// AXA - BVS          2
+// AXA - Imperial     3
+// AXA - GAB          4
+// AXA - CL           5
+// AXA - GAB WNS      6
+// AXA - CL WNS       6
+// AXA - WNS          8
+// AXA - Imperial WNS 8
+// AXA - BVS WNS      8
+// AXA - GAB BRICS    9
+// AXA - CL Oriel     10
 
 
       ] 
     ];
+
+// Name  Friendly
+// AXA - Desktop AXA - Desktop
+// AXA - BVS         - BVS
+// AXA - Imperial    - ICL
+// AXA - GAB         - GAB
+// AXA - CL          - CL
+// AXA - GAB WNS     - WNS
+// AXA - CL WNS      - WNS
+// AXA - WNS         - WNS
+// AXA - Imperial WNS -  WNS
+// AXA - BVS WNS       - WNS
+// AXA - GAB BRICS - BRICS
+// AXA - CL Oriel  - ORIEL
 
   /**
    * Import csv file
