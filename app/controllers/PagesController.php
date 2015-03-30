@@ -128,12 +128,20 @@ class PagesController extends Controller {
 
   private function groupAndCount($start, $end)
   {
-      return Record::groupBy('dataset_id')
-        ->whereBetween('date_received', [$start, $end])
-        ->get([
-          DB::raw('dataset_id'),
-          DB::raw('COUNT(dataset_id) as total')
-        ]);
+      // return Record::groupBy('dataset_id')
+      //   ->whereBetween('date_received', [$start, $end])
+      //   ->get([
+      //     DB::raw('dataset_id'),
+      //     DB::raw('COUNT(dataset_id) as total')
+      //   ]);
+
+    dd(DB::table('records')
+      ->join('datasets', 'datasets.id', '=', 'records.dataset_id')
+      ->select('slide2Friendly', 'slide2Sequence', 'records.id', 'slide2Sequence')
+      ->where('date_received' => $start and 'date_received' <= $end)
+      ->orderBy('slide2Sequence')
+      ->groupBy('slide2Friendly' as 'total')
+      ->get());
   }
 
   

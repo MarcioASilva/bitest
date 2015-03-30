@@ -2,63 +2,55 @@
 
 class ImportController extends Controller {
 
-  private $groupLookup = [
-      1 => ['AXA - Desktop'],
-      2 => ['AXA - BVS',
-            'AXA - Imperial WNS'
-            ]
-      3 => ['AXA - GAB',
-            'AXA - CL'
-          ]
-      4 => ['AXA - CL WNS',
-            'AXA - GAB WNS',
-            ''
-          ]
+  private $slide2FriendlyLookup = [
+    'AXA - Desktop' => [
+      'AXA - Desktop'
+    ],
+    'BVS' => [
+      'AXA - BVS'
+    ],
+    'ICL' => [
+      'AXA - Imperial'
+    ],
+    'GAB' => [
+      'AXA - GAB'
+    ],
+    'CL' => [
+      'AXA - CL'
+    ],
+    'AXA - GAB WNS' => [
+      'AXA - GAB WNS'
+    ],
+    'AXA - CL WNS'  => [
+      'AXA - CL WNS'
+    ],
+    'WNS' => [
+      'AXA - WNS',
+      'AXA - Imperial WNS',
+      'AXA - BVS WNS'
+    ],
+    'BRICS' => [
+      'AXA - GAB BRICS'
+    ],
+    'ORIEL' => [
+      'AXA - CL Oriel'
+    ]
+  ];
 
-// Name  Hierarchy
-// AXA - Desktop      1
-// AXA - BVS          2
-// AXA - Imperial     3
-// AXA - GAB          4
-// AXA - CL           5
-// AXA - GAB WNS      7
-// AXA - CL WNS       6
-// AXA - WNS 8
-// AXA - Imperial WNS 8
-// AXA - BVS WNS      8
-// AXA - GAB BRICS    9
-// AXA - CL Oriel     10
-
-// Name  Grouping
-// AXA - BVS          2
-// AXA - Imperial     3
-// AXA - GAB          4
-// AXA - CL           5
-// AXA - GAB WNS      6
-// AXA - CL WNS       6
-// AXA - WNS          8
-// AXA - Imperial WNS 8
-// AXA - BVS WNS      8
-// AXA - GAB BRICS    9
-// AXA - CL Oriel     10
-
-
-      ] 
-    ];
-
-// Name  Friendly
-// AXA - Desktop AXA - Desktop
-// AXA - BVS         - BVS
-// AXA - Imperial    - ICL
-// AXA - GAB         - GAB
-// AXA - CL          - CL
-// AXA - GAB WNS     - WNS
-// AXA - CL WNS      - WNS
-// AXA - WNS         - WNS
-// AXA - Imperial WNS -  WNS
-// AXA - BVS WNS       - WNS
-// AXA - GAB BRICS - BRICS
-// AXA - CL Oriel  - ORIEL
+  private $slide2SequenceLookup = [
+    1  => ['AXA - Desktop'],
+    2  => ['AXA - BVS'],
+    3  => ['AXA - Imperial'],
+    4  => ['AXA - CL'],
+    5  => ['AXA - GAB'],
+    6  => ['AXA - GAB WNS'],
+    7  => ['AXA - CL WNS'],
+    8  => ['AXA - WNS'],
+    9  => ['AXA - Imperial WNS'],
+    10 => ['AXA - BVS WNS'],
+    11 => ['AXA - GAB BRICS'],
+    12 => ['AXA - CL Oriel']
+  ];
 
   /**
    * Import csv file
@@ -68,7 +60,7 @@ class ImportController extends Controller {
   {
     $path = public_path() . '/uploads/file_less_columns_full.csv';
 
-    Excel::filter('chunk')->load($path)->chunk(500, function($spreadsheet)
+    Excel::filter('chunk')->load($path)->chunk(50000, function($spreadsheet)
     {
       $report_date = [
         'report_date' => Carbon::now()->toDateTimeString()
@@ -85,9 +77,9 @@ class ImportController extends Controller {
       foreach($spreadsheet as $key => $row)
       {
         $dataset = [
-          'dataset'       => $row->dataset,
-          'group'         => $this->getGroup($row->dataset),
-          // 'friendly_name' => 'ICL'
+          'dataset'        => $row->dataset,
+          'slide2Friendly' => $this->getArrayLookup($row->dataset, $this->slide2FriendlyLookup),
+          'slide2Sequence' => $this->getArrayLookup($row->dataset, $this->slide2SequenceLookup)
         ];
 
         $file_status = [
@@ -180,9 +172,9 @@ class ImportController extends Controller {
     return null;
   }
 
-  private function getGroup($dataset)
+  private function getArrayLookup($dataset, $array)
   {
-    foreach($this->groupLookup as $key => $lookup)
+    foreach($array as $key => $lookup)
     {
       if(in_array($dataset, $lookup))
       {
@@ -190,7 +182,7 @@ class ImportController extends Controller {
       }
     }
 
-    return 0;
+    return $dataset;
   }
 
 }
