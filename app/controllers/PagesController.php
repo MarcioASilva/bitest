@@ -128,20 +128,31 @@ class PagesController extends Controller {
 
   private function groupAndCount($start, $end)
   {
-      // return Record::groupBy('dataset_id')
-      //   ->whereBetween('date_received', [$start, $end])
-      //   ->get([
-      //     DB::raw('dataset_id'),
-      //     DB::raw('COUNT(dataset_id) as total')
-      //   ]);
+      return Record::groupBy('dataset_id')
+        ->join('datasets', 'datasets.id', '=', 'records.dataset_id')
+        ->whereBetween('date_received', [$start, $end])
+        ->orderBy('slide2Sequence')
+        ->get([
+          DB::raw('dataset_id'),
+          DB::raw('COUNT(dataset_id) as total'),
+          DB::raw('slide2Sequence'),
+          DB::raw('slide2Friendly')
+        ]);
 
-    dd(DB::table('records')
-      ->join('datasets', 'datasets.id', '=', 'records.dataset_id')
-      ->select('slide2Friendly', 'slide2Sequence', 'records.id', 'slide2Sequence')
-      ->where('date_received' => $start and 'date_received' <= $end)
-      ->orderBy('slide2Sequence')
-      ->groupBy('slide2Friendly' as 'total')
-      ->get());
+    // dd(DB::table('records')
+    //   ->join('datasets', 'datasets.id', '=', 'records.dataset_id')
+    //   // ->select('slide2Friendly', 'slide2Sequence', 'records.id', 'slide2Sequence')
+    //   ->select('record.id', 'dataset_id')
+    //   // ->where('date_received' => $start and 'date_received' <= $end)
+    //   ->orderBy('records.id')
+    //   ->groupBy('dataset_id')
+    //   ->get(DB::raw('COUNT(record_id) as total')
+    // ));
+
+    // Category::select(DB::raw('categories.*, count(*) as `aggregate`'))
+    // ->join('pictures', 'categories.id', '=', 'pictures.category_id')
+    // ->groupBy('category_id')
+    // ->orderBy('aggregate', 'desc')
   }
 
   
@@ -196,7 +207,6 @@ class PagesController extends Controller {
 
     foreach($data as $key => $row)
     {
-      $returnData[$key]['dataset'] = $row->dataset->dataset;
       $returnData[$key]['count']   = number_format($row->total);
       $returnData[$key]['perc']    = $this->sortRounding(($row->total / $sum) * 100) . '%';
     }
