@@ -16,6 +16,7 @@ class HomeController extends BaseController {
 	*/
 
 	// Adding a comment
+	// a line of comment
 
 	public function showWelcome()
 	{
