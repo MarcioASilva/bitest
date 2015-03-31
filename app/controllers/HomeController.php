@@ -15,6 +15,8 @@ class HomeController extends BaseController {
 	|
 	*/
 
+	// Adding a comment
+
 	public function showWelcome()
 	{
 		return View::make('hello');
