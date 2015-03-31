@@ -18,6 +18,8 @@ class CreateDatasetsTable extends Migration {
 
 			$table->increments('id');
 			$table->string('dataset')->unique();
+			$table->string('slide2Friendly');
+			$table->integer('slide2Sequence');
 			$table->timestamps();
 			$table->softDeletes();
 		});

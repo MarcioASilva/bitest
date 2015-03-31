@@ -34,7 +34,7 @@ class CreateRecordsTable extends Migration {
 			$table->foreign('file_status_id')->references('id')->on('file_statuses')->onDelete('cascade');
 			$table->integer('reason_id')->unsigned()->nullable();
 			$table->foreign('reason_id')->references('id')->on('reasons')->onDelete('cascade');
-			$table->integer('peril_id')->unsigned();
+			$table->integer('peril_id')->unsigned()->nullable();
 			$table->foreign('peril_id')->references('id')->on('perils')->onDelete('cascade');
 			$table->integer('report_id')->unsigned();
 			$table->foreign('report_id')->references('id')->on('reports')->onDelete('cascade');

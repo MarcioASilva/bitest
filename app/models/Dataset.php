@@ -6,12 +6,16 @@ class Dataset extends \Eloquent {
 
 	// Add your validation rules here
 	public static $rules = [
-		'dataset' => 'required|unique:datasets'
+		'dataset'         => 'required|unique:datasets',
+    'slide2Friendly'  => 'required',
+    'slide2Sequence'  => 'required|integer',
 	];
 
 	// Don't forget to fill this array
 	protected $fillable = [
-		'dataset'
+		'dataset',
+    'slide2Friendly',
+    'slide2Sequence',
 	];
 
   public function records()

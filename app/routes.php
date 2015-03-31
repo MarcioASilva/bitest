@@ -22,6 +22,9 @@ Route::group(array('prefix' => 'api'), function()
   // /api/charts
   Route::controller('charts', 'PagesController');
 
+  // /api/import
+  Route::controller('import', 'ImportController');
+
   Route::resource('perils', 'PerilsController');
   Route::resource('reasons', 'ReasonsController');
   Route::resource('records', 'RecordsController');
