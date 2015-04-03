@@ -6,14 +6,16 @@ class PagesController extends Controller {
   private $exportedDate;
   private $firstDayOfLastYear;
   private $lastDayOfLastYear;
-  private $lastDayOfLastMonth;
   private $firstDayOfThisYear;
+  private $lastDayOfLastPeriod;
+  private $firstDayoflast12Monhts;
+  private $lastDayoflast12Monhts;
 
   public function getSelectDropdown()
   {
-    $selectDrodpdown = Report::orderBy('report_date', 'desc')->get();
+    // $selectDrodpdown = Report::orderBy('report_date', 'desc')->get();
     $trimmedDropdown = [];
-
+// 
     foreach($selectDrodpdown as $rows)
     {
       $rows->report_date = Carbon::createFromTimeStamp(strtotime($rows->report_date))->format('F Y');
@@ -47,22 +49,21 @@ class PagesController extends Controller {
   {
     // Set the dates for late usage
     $this->setDates($reportId);
-
-    // dd($this->lastDayOfLastYear);
     
     // Get the data
-    $previousYearData = $this->groupAndCount($this->firstDayOfLastYear, $this->lastDayOfLastYear);
-    $currentYearData  = $this->groupAndCount($this->firstDayOfThisYear, $this->lastDayOfLastMonth);
+    $previousYearData = $this->groupAndCountDatasets($this->firstDayOfLastYear, $this->lastDayOfLastYear);
+    $currentYearData  = $this->groupAndCountDatasets($this->firstDayOfThisYear, $this->lastDayOfLastPeriod);
+
 
     // Return everything
     return Response::json([
         'error'                 => false,
-        'previous_year'         => $this->extractYear($this->lastDayOfLastYear),
+        'previous_year'         => $this->extractYear($this->firstDayOfLastYear),
         'previous_year_records' => $this->calculatePercentage($previousYearData),
         'previous_year_total'   => $this->yearTotal($this->firstDayOfLastYear, $this->lastDayOfLastYear),
         'current_year'          => $this->extractYear($this->firstDayOfThisYear),
         'current_year_records'  => $this->calculatePercentage($currentYearData),
-        'current_year_total'    => $this->yearTotal($this->firstDayOfThisYear, $this->lastDayOfLastMonth),
+        'current_year_total'    => $this->yearTotal($this->firstDayOfThisYear, $this->lastDayOfLastPeriod),
       ],
       200
     );
@@ -72,20 +73,22 @@ class PagesController extends Controller {
   {
     $this->setDates($reportId);
 
-    //Chosen dataset
-    $datasetArray = Dataset::where('dataset', '=', 'AXA - Desktop')->first()->id;
+    $myObj = Dataset::whereIn('dataset', ['AXA - Desktop', 'aa'])->get();
+
+    // dataset
+    $arrayOfDatasetIds = $this->eloquentObjToArrayOfIds($myObj);
     
     // Get the data
-    $previousYearData = $this->groupByMonth($this->firstDayOfLastYear, $this->lastDayOfLastYear, $datasetArray);
-    $currentYearData  = $this->groupByMonth($this->firstDayOfThisYear, $this->lastDayOfLastMonth, $datasetArray);
+    $previousYearData = $this->groupByMonth($this->firstDayOfLastYear, $this->lastDayOfLastYear, $arrayOfDatasetIds);
+    $currentYearData  = $this->groupByMonth($this->firstDayOfThisYear, $this->lastDayOfLastPeriod, $arrayOfDatasetIds);
 
     // Return everything
     return Response::json([
         'error'                 => false,
-        'previous_year'         => $this->extractYear($this->lastDayOfLastYear),
-        'series1'               => $this->$previousYearData,
+        'previous_year'         => $this->extractYear($this->firstDayOfLastYear),
+        'series1'               => $this->numberToMonth($previousYearData),
         'current_year'          => $this->extractYear($this->firstDayOfThisYear),
-        'series2'               => $this->$currentYearData,
+        'series2'               => $this->numberToMonth($currentYearData),
       ],
       200
     );
@@ -93,11 +96,44 @@ class PagesController extends Controller {
 
   public function getPage7($reportId)
   {
+    // Set the dates for late usage
     $this->setDates($reportId);
 
-    $fileStatus = FileStatus::where('file_statuses', '=', 'Closed')->first()->id;
+    //Get the file_status
+    $fileStatus = FileStatus::where('file_status', '=', 'Closed')->first()->id;
 
-    $series = getPieChart($this->firstDayOfThisYear, $this->lastDayOfLastMonth, $fileStatus);
+    $series = $this->groupAndCountReasons($this->firstDayOfThisYear, $this
+      ->lastDayOfLastPeriod, $fileStatus);
+
+    dd($series);
+    // Return everything
+    return Response::json([
+        'error'                 => false,
+        'current_year_records'  => $this->calculatePercentage($series),
+      ],
+      200
+    );
+  }
+
+
+  public function getPage8($reportId)
+  {
+    // Set the dates for late usage
+    $this->setDates($reportId);
+
+    //Get the file_status
+    $fileStatus = FileStatus::where('file_status', '=', 'Closed')->first()->id;
+
+    $series = $this->groupAndCountReasons($this->firstDayOfThisYear, $this
+      ->lastDayOfLastPeriod, $fileStatus);
+
+    // Return everything
+    return Response::json([
+        'error'                 => false,
+        'current_year_records'  => $this->calculatePercentage($series),
+      ],
+      200
+    );
   }
 
   /******************************************
@@ -105,6 +141,18 @@ class PagesController extends Controller {
   /*  Private functions                     */
   /*                                        */
   /******************************************/
+
+  private function eloquentObjToArrayOfIds($obj)
+  {
+    $idsArray = [];
+
+    foreach($obj as $datasetObj)
+    {
+      array_push($idsArray, $datasetObj->id);
+    }
+
+    return $idsArray;
+  }
 
   private function setDates($reportId)
   {
@@ -122,13 +170,19 @@ class PagesController extends Controller {
     $this->firstDayOfThisYear = Carbon::createFromTimeStamp(strtotime($report->report_date))
       ->startOfYear()->toDateTimeString();
 
-    $this->lastDayOfLastMonth = Carbon::createFromTimeStamp(strtotime(($report->report_date)))
+    $this->lastDayOfLastPeriod = Carbon::createFromTimeStamp(strtotime(($report->report_date)))
       ->subMonth()->lastOfMonth()->addDay()->toDateTimeString();
+
+    $this->firstDayoflast12Monhts = Carbon::createFromTimeStamp(strtotime($report->report_date))
+      ->subYear()->subMonth()->startOfMonth();
+
+    $this->lastDayoflast12Monhts = Carbon::createFromTimeStamp(strtotime($report->report_date))
+      ->subMonth()->lastOfMonth();
   }
 
-  private function groupAndCount($start, $end)
+  private function groupAndCountDatasets($start, $end)
   {
-      return Record::groupBy('dataset_id')
+      return Record::groupBy('slide2Friendly')
         ->join('datasets', 'datasets.id', '=', 'records.dataset_id')
         ->whereBetween('date_received', [$start, $end])
         ->orderBy('slide2Sequence')
@@ -138,61 +192,18 @@ class PagesController extends Controller {
           DB::raw('slide2Sequence'),
           DB::raw('slide2Friendly')
         ]);
-
-    // dd(DB::table('records')
-    //   ->join('datasets', 'datasets.id', '=', 'records.dataset_id')
-    //   // ->select('slide2Friendly', 'slide2Sequence', 'records.id', 'slide2Sequence')
-    //   ->select('record.id', 'dataset_id')
-    //   // ->where('date_received' => $start and 'date_received' <= $end)
-    //   ->orderBy('records.id')
-    //   ->groupBy('dataset_id')
-    //   ->get(DB::raw('COUNT(record_id) as total')
-    // ));
-
-    // Category::select(DB::raw('categories.*, count(*) as `aggregate`'))
-    // ->join('pictures', 'categories.id', '=', 'pictures.category_id')
-    // ->groupBy('category_id')
-    // ->orderBy('aggregate', 'desc')
   }
-
   
-  private function groupByMonth($start, $end, $datasetArray)
+  private function groupByMonth($start, $end, $arrayOfIds)
   {
-    // Set some data placeholders
-    $records = [];
-
-    $query = Record::groupBy('month')
-    ->whereBetween('date_received', [$start, $end])
-    ->where(function($datasetArray)
-    {
-      foreach($datasetArray as $item)
-      {
-        $datasetArray->orWhere('dataset_id', '=', $item);
-      }
-    })
-    ->get([
-      DB::raw('MONTH(date_received) as month'),
-      DB::raw('COUNT(dataset_id) as count')
-    ]);
-
-      // Build the final arrays
-    foreach($query as $row)
-    {
-
-      $data = [];
-      $data['month'] = Carbon::createFromTimeStamp(strtotime($row->month))->format('M');
-      $data['count'] = number_format($row->count);
-      
-      $records[] = $data;
-    }
-
-    //Return everything
-    return Response::json([
-        'error'     => false,
-        'api_data'  => $records,
-      ],
-      200
-    );
+    return Record::groupBy('month')
+      ->whereBetween('date_received', [$start, $end])
+      ->whereIn('dataset_id', $arrayOfIds)
+      ->get([
+        DB::raw('MONTH(date_received) as month'),
+        DB::raw('COUNT(dataset_id) as count'),
+        DB::raw('date_received as fulldate')
+      ]);
   }
 
   private function calculatePercentage($data)
@@ -202,13 +213,15 @@ class PagesController extends Controller {
 
     foreach($data as $row)
     {
+      // dd($row);
       $sum += $row->total;
     }
 
     foreach($data as $key => $row)
     {
-      $returnData[$key]['count']   = number_format($row->total);
-      $returnData[$key]['perc']    = $this->sortRounding(($row->total / $sum) * 100) . '%';
+      $returnData[$key]['name']   = $row->slide2Friendly;
+      $returnData[$key]['count']  = number_format($row->total);
+      $returnData[$key]['perc']   = $this->sortRounding(($row->total / $sum) * 100) . '%';
     }
 
     return $returnData;
@@ -243,12 +256,58 @@ class PagesController extends Controller {
   private function extractYear($date)
   {
     return Carbon::createFromTimeStamp(strtotime($date))->format('Y');
-  }
+  } 
 
   private function yearTotal($start, $end)
   {
     $count = Record::whereBetween('date_received', [$start, $end])->count();
     return number_format($count);
+  }
+
+  private function numberToMonth($data)
+  {
+    foreach($data as $key => $row)
+    {
+      $returnData[$key]['month'] = Carbon::createFromTimeStamp(strtotime($row->fulldate))->format('M');
+      $returnData[$key]['count'] = number_format($row->count);
+    }
+
+    return $returnData;
+  }
+
+  private function groupAndCountReasons($start, $end, $fileStatus)
+  {
+    $end = '2015-03-01';
+    // dd($end);
+
+    // return Record::groupBy('records')
+    //     // ->join('datasets', 'datasets.id', '=', 'records.dataset_id')
+    //     // ->whereBetween('date_received', [$start, $end])
+    //     // ->orderBy('slide2Sequence')
+    //     ->get([
+    //       DB::raw('id')
+          // DB::raw('COUNT(dataset_id) as total'),
+          // DB::raw('slide2Sequence'),
+          // DB::raw('slide2Friendly')
+
+    // return DB::table('records')
+    //   ->join('reasons', 'reasons.id', '=', 'records.reason_id')
+    //   // ->select('work_not_proceeding_reason', 'records.id')
+    //   ->whereBetween('date_received', [$start, $end])
+    //   ->where('file_status_id', '=', $fileStatus)
+    //   ->groupBy('work_not_proceeding_reason')
+    //   ->orderBy('total', 'desc')
+    //   ->get([
+    //     DB::raw('work_not_proceeding_reason'),
+    //     DB::raw('COUNT(work_not_proceeding_reason) as total'),
+    //     // DB::raw('reasons')
+    //   ]);
+
+    // DB::table('users')
+    //         ->join('contacts', 'users.id', '=', 'contacts.user_id')
+    //         ->join('orders', 'users.id', '=', 'orders.user_id')
+    //         ->select('users.id', 'contacts.phone', 'orders.price')
+    //         ->get();
   }
 
 }

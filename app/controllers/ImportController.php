@@ -52,6 +52,57 @@ class ImportController extends Controller {
     12 => ['AXA - CL Oriel']
   ];
 
+  
+  private $reasonsLookup = [
+    'Abandoned'
+      => ['Abandoned'],
+
+    'Cash Settlement'
+      => [
+        'Cash Settlement',
+        'Cash/Other Settlement',
+        'Cash/Other Settlement - :STATUS_STRING'
+      ],
+
+    'Claim Under Policy Excess'
+      => ['Claim Under Policy Excess'],
+
+    'Other'
+      => ['Other'],
+
+    'Referred to Supplier'
+      => ['Referred to Supplier'],
+
+    'Repudiated'
+      => ['Repudiated'],
+
+    'Under Consideration'
+      => ['Under Consideration'],
+
+    'Withdrawn'
+      => ['Withdrawn']
+  ];
+
+  private $datasetsReasonslookup = [
+    'File Closed without a \'Work not Proceeding\' Reason' => [
+      'AXA - Desktop',
+      'AXA - BVS',
+      'AXA - Imperial',
+      'AXA - GAB',
+      'AXA - CL'
+    ],
+
+    'Fulfillment' =>  [
+      'AXA - GAB WNS',
+      'AXA - CL WNS',
+      'AXA - WNS',
+      'AXA - Imperial WNS',
+      'AXA - BVS WNS',
+      'AXA - GAB BRICS',
+      'AXA - CL Oriel'
+    ]
+  ];
+
   /**
    * Import csv file
    * @return json response
@@ -91,7 +142,7 @@ class ImportController extends Controller {
         ];
 
         $reason = [
-          'work_not_proceeding_reason' => $row->work_not_proceeding_reason
+          'work_not_proceeding_reason' => $this->getCompareWith2Arrays($row->dataset, $row->work_not_proceeding_reason)
         ];
 
         $xstatuses = [
@@ -172,17 +223,27 @@ class ImportController extends Controller {
     return null;
   }
 
-  private function getArrayLookup($dataset, $array)
+  private function getArrayLookup($value, $lookupArray)
   {
-    foreach($array as $key => $lookup)
+    foreach($lookupArray as $key => $lookup)
     {
-      if(in_array($dataset, $lookup))
+      if(in_array($value, $lookup))
       {
         return $key;
       }
     }
 
-    return $dataset;
+    return $value;
+  }
+
+  private function getCompareWith2Arrays($dataset, $reason)
+  {
+    if(is_null($reason))
+    {
+      return $this->getArrayLookup($dataset, $this->datasetsReasonslookup);
+    }
+
+    return $this->getArrayLookup($reason, $this->reasonsLookup);
   }
 
 }
