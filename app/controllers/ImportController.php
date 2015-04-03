@@ -215,9 +215,17 @@ class ImportController extends Controller {
 
   private function nullably($model, $clause, $row)
   {
+
     if(isset($model::where($clause, '=', $row->$clause)->first()->id))
     {
       return $model::where($clause, '=', $row->$clause)->first()->id;
+    }
+
+    elseif($model = 'Reason')
+    {
+      return Reason::where($clause, '=', $this
+        ->getArrayLookup($row->dataset, $this->datasetsReasonslookup))
+        ->first()->id;
     }
 
     return null;
@@ -245,5 +253,5 @@ class ImportController extends Controller {
 
     return $this->getArrayLookup($reason, $this->reasonsLookup);
   }
-
+// 
 }

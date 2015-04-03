@@ -13,7 +13,7 @@ class PagesController extends Controller {
 
   public function getSelectDropdown()
   {
-    // $selectDrodpdown = Report::orderBy('report_date', 'desc')->get();
+    $selectDrodpdown = Report::orderBy('report_date', 'desc')->get();
     $trimmedDropdown = [];
 // 
     foreach($selectDrodpdown as $rows)
@@ -105,7 +105,7 @@ class PagesController extends Controller {
     $series = $this->groupAndCountReasons($this->firstDayOfThisYear, $this
       ->lastDayOfLastPeriod, $fileStatus);
 
-    dd($series);
+    // dd($series);
     // Return everything
     return Response::json([
         'error'                 => false,
@@ -268,7 +268,9 @@ class PagesController extends Controller {
   {
     foreach($data as $key => $row)
     {
-      $returnData[$key]['month'] = Carbon::createFromTimeStamp(strtotime($row->fulldate))->format('M');
+      $returnData[$key]['month'] = Carbon::createFromTimeStamp(strtotime($row
+        ->fulldate))->format('M');
+      
       $returnData[$key]['count'] = number_format($row->count);
     }
 
@@ -277,18 +279,20 @@ class PagesController extends Controller {
 
   private function groupAndCountReasons($start, $end, $fileStatus)
   {
-    $end = '2015-03-01';
-    // dd($end);
-
-    // return Record::groupBy('records')
-    //     // ->join('datasets', 'datasets.id', '=', 'records.dataset_id')
-    //     // ->whereBetween('date_received', [$start, $end])
-    //     // ->orderBy('slide2Sequence')
-    //     ->get([
-    //       DB::raw('id')
-          // DB::raw('COUNT(dataset_id) as total'),
-          // DB::raw('slide2Sequence'),
-          // DB::raw('slide2Friendly')
+    // return
+     dd(DB::table('records')
+      ->select('count(id) as count, reason_id')
+      ->groupBy('reason_id')
+        ->join('reasons', 'reasons.id', '=', 'records.reasons_id')
+        ->whereBetween('date_received', [$start, $end])
+        ->orderBy('date_received', 'desc')
+        ->get(
+        //   [
+        //   DB::raw('id'),
+        //   // DB::raw('COUNT(id) as total')
+        //   // DB::raw('COUNT(dataset_id) as total')
+        // ]
+        ));
 
     // return DB::table('records')
     //   ->join('reasons', 'reasons.id', '=', 'records.reason_id')
@@ -301,7 +305,7 @@ class PagesController extends Controller {
     //     DB::raw('work_not_proceeding_reason'),
     //     DB::raw('COUNT(work_not_proceeding_reason) as total'),
     //     // DB::raw('reasons')
-    //   ]);
+      // ]);
 
     // DB::table('users')
     //         ->join('contacts', 'users.id', '=', 'contacts.user_id')
