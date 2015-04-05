@@ -142,7 +142,7 @@ class ImportController extends Controller {
         ];
 
         $reason = [
-          'work_not_proceeding_reason' => $this->getCompareWith2Arrays($row->dataset, $row->work_not_proceeding_reason)
+          'work_not_proceeding_reason' => $this->getTwoArraysLookup($row->dataset, $row->work_not_proceeding_reason)
         ];
 
         $xstatuses = [
@@ -171,7 +171,7 @@ class ImportController extends Controller {
           'dataset_id'                         => Dataset::where('dataset', '=', $row->dataset)->first()->id,
           'xstatus_id'                         => Xstatus::where('xact_analysis', '=', $row->xactanalysis)->first()->id,
           'file_status_id'                     => FileStatus::where('file_status', '=', $row->file_status)->first()->id,
-          'reason_id'                          => $this->nullably('Reason', 'work_not_proceeding_reason', $row),
+          'reason_id'                          => $this->getReasonIdByName($row->dataset, $row->work_not_proceeding_reason),
           'peril_id'                           => $this->nullably('Peril', 'peril', $row),
           'report_id'                          => $reportDateId,
           'exported_date_id'                   => $exportedDateId
@@ -193,6 +193,16 @@ class ImportController extends Controller {
   /*  Private functions                     */
   /*                                        */
   /******************************************/
+
+  private function getReasonIdByName($dataset, $reason)
+  {
+    $result = $this->getTwoArraysLookup($dataset, $reason);
+
+    return Reason::where('work_not_proceeding_reason', '=', $result)
+      ->first()
+      ->id;
+  }
+
   private function importRow($data, $model)
   {
     $validator = Validator::make($data, $model::$rules);
@@ -215,17 +225,9 @@ class ImportController extends Controller {
 
   private function nullably($model, $clause, $row)
   {
-
     if(isset($model::where($clause, '=', $row->$clause)->first()->id))
     {
       return $model::where($clause, '=', $row->$clause)->first()->id;
-    }
-
-    elseif($model = 'Reason')
-    {
-      return Reason::where($clause, '=', $this
-        ->getArrayLookup($row->dataset, $this->datasetsReasonslookup))
-        ->first()->id;
     }
 
     return null;
@@ -244,9 +246,9 @@ class ImportController extends Controller {
     return $value;
   }
 
-  private function getCompareWith2Arrays($dataset, $reason)
+  private function getTwoArraysLookup($dataset, $reason)
   {
-    if(is_null($reason))
+    if(!$reason)
     {
       return $this->getArrayLookup($dataset, $this->datasetsReasonslookup);
     }

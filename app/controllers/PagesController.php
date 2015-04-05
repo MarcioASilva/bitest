@@ -73,7 +73,7 @@ class PagesController extends Controller {
   {
     $this->setDates($reportId);
 
-    $myObj = Dataset::whereIn('dataset', ['AXA - Desktop', 'aa'])->get();
+    $myObj = Dataset::whereIn('dataset', ['AXA - Desktop'])->get();
 
     // dataset
     $arrayOfDatasetIds = $this->eloquentObjToArrayOfIds($myObj);
@@ -105,36 +105,37 @@ class PagesController extends Controller {
     $series = $this->groupAndCountReasons($this->firstDayOfThisYear, $this
       ->lastDayOfLastPeriod, $fileStatus);
 
-    // dd($series);
     // Return everything
     return Response::json([
-        'error'                 => false,
-        'current_year_records'  => $this->calculatePercentage($series),
+        'error'  => false,
+        'records' => $this->calculatePercentage($series)
       ],
       200
     );
   }
-
 
   public function getPage8($reportId)
   {
     // Set the dates for late usage
     $this->setDates($reportId);
 
-    //Get the file_status
-    $fileStatus = FileStatus::where('file_status', '=', 'Closed')->first()->id;
+    $myObj = Dataset::whereIn('dataset', ['AXA - Desktop'])->get();
 
-    $series = $this->groupAndCountReasons($this->firstDayOfThisYear, $this
-      ->lastDayOfLastPeriod, $fileStatus);
+    // dataset
+    $arrayOfDatasetIds = $this->eloquentObjToArrayOfIds($myObj);
+
+    $series = $this->groupAndCountFileStatus($this->firstDayoflast12Monhts, $this
+      ->lastDayoflast12Monhts, $arrayOfDatasetIds);
 
     // Return everything
     return Response::json([
-        'error'                 => false,
-        'current_year_records'  => $this->calculatePercentage($series),
+        'error'   => false,
+        'records' => $this->calculatePercentage($series)
       ],
       200
     );
   }
+
 
   /******************************************
   /*                                        */
@@ -174,10 +175,10 @@ class PagesController extends Controller {
       ->subMonth()->lastOfMonth()->addDay()->toDateTimeString();
 
     $this->firstDayoflast12Monhts = Carbon::createFromTimeStamp(strtotime($report->report_date))
-      ->subYear()->subMonth()->startOfMonth();
+      ->subYear()->startOfMonth()->subDay();
 
     $this->lastDayoflast12Monhts = Carbon::createFromTimeStamp(strtotime($report->report_date))
-      ->subMonth()->lastOfMonth();
+      ->subMonth()->lastOfMonth()->addDay();
   }
 
   private function groupAndCountDatasets($start, $end)
@@ -190,7 +191,7 @@ class PagesController extends Controller {
           DB::raw('dataset_id'),
           DB::raw('COUNT(dataset_id) as total'),
           DB::raw('slide2Sequence'),
-          DB::raw('slide2Friendly')
+          DB::raw('slide2Friendly as name')
         ]);
   }
   
@@ -213,13 +214,12 @@ class PagesController extends Controller {
 
     foreach($data as $row)
     {
-      // dd($row);
       $sum += $row->total;
     }
 
     foreach($data as $key => $row)
     {
-      $returnData[$key]['name']   = $row->slide2Friendly;
+      $returnData[$key]['name']   = $row->name;
       $returnData[$key]['count']  = number_format($row->total);
       $returnData[$key]['perc']   = $this->sortRounding(($row->total / $sum) * 100) . '%';
     }
@@ -279,39 +279,25 @@ class PagesController extends Controller {
 
   private function groupAndCountReasons($start, $end, $fileStatus)
   {
-    // return
-     dd(DB::table('records')
-      ->select('count(id) as count, reason_id')
-      ->groupBy('reason_id')
-        ->join('reasons', 'reasons.id', '=', 'records.reasons_id')
-        ->whereBetween('date_received', [$start, $end])
-        ->orderBy('date_received', 'desc')
-        ->get(
-        //   [
-        //   DB::raw('id'),
-        //   // DB::raw('COUNT(id) as total')
-        //   // DB::raw('COUNT(dataset_id) as total')
-        // ]
-        ));
+     
+    return Record::groupBy('work_not_proceeding_reason')
+      ->select(DB::raw('work_not_proceeding_reason as name'), DB::raw('COUNT(records.id) as total'))
+      ->join('reasons', 'reasons.id', '=', 'records.reason_id')
+      ->whereBetween('date_received', [$start, $end])
+      ->where('file_status_id', '=', $fileStatus)
+      ->orderBy('total', 'desc')
+      ->get();
+  }
 
-    // return DB::table('records')
-    //   ->join('reasons', 'reasons.id', '=', 'records.reason_id')
-    //   // ->select('work_not_proceeding_reason', 'records.id')
-    //   ->whereBetween('date_received', [$start, $end])
-    //   ->where('file_status_id', '=', $fileStatus)
-    //   ->groupBy('work_not_proceeding_reason')
-    //   ->orderBy('total', 'desc')
-    //   ->get([
-    //     DB::raw('work_not_proceeding_reason'),
-    //     DB::raw('COUNT(work_not_proceeding_reason) as total'),
-    //     // DB::raw('reasons')
-      // ]);
-
-    // DB::table('users')
-    //         ->join('contacts', 'users.id', '=', 'contacts.user_id')
-    //         ->join('orders', 'users.id', '=', 'orders.user_id')
-    //         ->select('users.id', 'contacts.phone', 'orders.price')
-    //         ->get();
+  private function groupAndCountFileStatus($start, $end, $arrayOfDatasetIds)
+  {
+    return Record::groupBy('file_status')
+      ->select(DB::raw('file_status as name'), DB::raw('COUNT(records.id) as total'))
+      ->join('file_statuses', 'file_statuses.id', '=', 'records.file_status_id')
+      ->whereBetween('date_received', [$start, $end])
+      ->whereIn('dataset_id', $arrayOfDatasetIds)
+      ->orderBy('name', 'desc')
+      ->get();
   }
 
 }
