@@ -11,11 +11,26 @@ class PagesController extends Controller {
   private $firstDayoflast12Monhts;
   private $lastDayoflast12Monhts;
 
+  private $months = [
+    1  => 'Jan',
+    2  => 'Feb',
+    3  => 'Mar',
+    4  => 'Apr',
+    5  => 'May',
+    6  => 'Jun',
+    7  => 'Jul',
+    8  => 'Aug',
+    9  => 'Sep',
+    10 => 'Oct',
+    11 => 'Nov',
+    12 => 'Dec'
+  ];
+
   public function getSelectDropdown()
   {
     $selectDrodpdown = Report::orderBy('report_date', 'desc')->get();
     $trimmedDropdown = [];
-// 
+
     foreach($selectDrodpdown as $rows)
     {
       $rows->report_date = Carbon::createFromTimeStamp(strtotime($rows->report_date))->format('F Y');
@@ -77,18 +92,35 @@ class PagesController extends Controller {
 
     // dataset
     $arrayOfDatasetIds = $this->eloquentObjToArrayOfIds($myObj);
-    
+
+    $previousYearDataParams = [
+      'start'      => $this->firstDayOfLastYear,
+      'end'        => $this->lastDayOfLastYear,
+      'arrayOfIds' => $arrayOfDatasetIds
+    ];
+
+    $currentYearDataParams = [
+      'start'      => $this->firstDayOfThisYear,
+      'end'        => $this->lastDayOfLastPeriod,
+      'arrayOfIds' => $arrayOfDatasetIds
+    ];
+
     // Get the data
-    $previousYearData = $this->groupByMonth($this->firstDayOfLastYear, $this->lastDayOfLastYear, $arrayOfDatasetIds);
-    $currentYearData  = $this->groupByMonth($this->firstDayOfThisYear, $this->lastDayOfLastPeriod, $arrayOfDatasetIds);
+    $previousYearData = $this->groupByMonth($previousYearDataParams);
+    $currentYearData  = $this->groupByMonth($currentYearDataParams);
+
+    $series1 = $this->fillRecordsMonthGaps($previousYearData->toArray(), 12);
+    $series2 = $this->fillRecordsMonthGaps($currentYearData->toArray(), $this->numberOfMonthsIntoThisYear());
+
+    dd($series1);
 
     // Return everything
     return Response::json([
-        'error'                 => false,
-        'previous_year'         => $this->extractYear($this->firstDayOfLastYear),
-        'series1'               => $this->numberToMonth($previousYearData),
-        'current_year'          => $this->extractYear($this->firstDayOfThisYear),
-        'series2'               => $this->numberToMonth($currentYearData),
+        'error'         => false,
+        'previous_year' => $this->extractYear($this->firstDayOfLastYear),
+        'series1'       => $series1,
+        'current_year'  => $this->extractYear($this->firstDayOfThisYear),
+        'series2'       => $series2,
       ],
       200
     );
@@ -195,15 +227,14 @@ class PagesController extends Controller {
         ]);
   }
   
-  private function groupByMonth($start, $end, $arrayOfIds)
+  private function groupByMonth($array)
   {
     return Record::groupBy('month')
-      ->whereBetween('date_received', [$start, $end])
-      ->whereIn('dataset_id', $arrayOfIds)
+      ->whereBetween('date_received', [$array['start'], $array['end']])
+      ->whereIn('dataset_id', $array['arrayOfIds'])
       ->get([
         DB::raw('MONTH(date_received) as month'),
-        DB::raw('COUNT(dataset_id) as count'),
-        DB::raw('date_received as fulldate')
+        DB::raw('COUNT(dataset_id) as count')
       ]);
   }
 
@@ -219,9 +250,9 @@ class PagesController extends Controller {
 
     foreach($data as $key => $row)
     {
-      $returnData[$key]['name']   = $row->name;
-      $returnData[$key]['count']  = number_format($row->total);
-      $returnData[$key]['perc']   = $this->sortRounding(($row->total / $sum) * 100) . '%';
+      $returnData[$key]['name']  = $row->name;
+      $returnData[$key]['count'] = number_format($row->total);
+      $returnData[$key]['perc']  = $this->sortRounding(($row->total / $sum) * 100) . '%';
     }
 
     return $returnData;
@@ -229,26 +260,26 @@ class PagesController extends Controller {
 
   private function sortRounding($float)
   {
-    $arr = $float;
+    $arr = str_split($float);
 
-    $arr = str_split($arr);
-
-    if ($arr[0]==0 && $arr[1]==0 && $arr[2]==0)
+    if($arr[0] == 0 && $arr[1] == 0 && $arr[2] == 0)
     {
       $float = round($float, 4);
     }
 
-    if ($arr[0]==0 && $arr[1]==0)
-    {
-      $float = round($float, 3);
-    }
-    
-    if ($arr[0]==0)
+    if($arr[0] == 0 && $arr[1] == 0)
     {
       $float = round($float, 2);
     }
+    
+    if($arr[0] == 0)
+    {
+      $float = round($float, 1);
+    }
     else
-     $float = round($float, 0); 
+    {
+      $float = round($float, 0); 
+    }
 
     return $float;
   }
@@ -256,7 +287,17 @@ class PagesController extends Controller {
   private function extractYear($date)
   {
     return Carbon::createFromTimeStamp(strtotime($date))->format('Y');
-  } 
+  }
+
+  private function extractMonth($date)
+  {
+    return Carbon::createFromTimeStamp(strtotime($date))->format('m');
+  }
+
+  private function numberOfMonthsIntoThisYear()
+  {
+    return $this->extractMonth($this->reportDate) - 1;
+  }
 
   private function yearTotal($start, $end)
   {
@@ -264,22 +305,8 @@ class PagesController extends Controller {
     return number_format($count);
   }
 
-  private function numberToMonth($data)
-  {
-    foreach($data as $key => $row)
-    {
-      $returnData[$key]['month'] = Carbon::createFromTimeStamp(strtotime($row
-        ->fulldate))->format('M');
-      
-      $returnData[$key]['count'] = number_format($row->count);
-    }
-
-    return $returnData;
-  }
-
   private function groupAndCountReasons($start, $end, $fileStatus)
   {
-     
     return Record::groupBy('work_not_proceeding_reason')
       ->select(DB::raw('work_not_proceeding_reason as name'), DB::raw('COUNT(records.id) as total'))
       ->join('reasons', 'reasons.id', '=', 'records.reason_id')
@@ -299,5 +326,74 @@ class PagesController extends Controller {
       ->orderBy('name', 'desc')
       ->get();
   }
+
+  private function fillRecordsMonthGaps($records, $loops)
+  {
+    
+    $offset = 0;
+    $returnRecords = [];
+
+    for($i = 0; 1; $i++)
+    {
+      
+      // dd($records[$i + $offset]['month']);
+      if(isset($records[$i + $offset]['month'])) //&& ($i == $records[$i + $offset]['month']))
+      {
+        
+        // dd($records[$i + $offset]['month']);
+        // echo 'if'.'<br>';
+        $returnRecords[$i]['month'] = $this->months[$records[$i]['month']];
+        $returnRecords[$i]['count'] = number_format($records[$i]['count']);
+      }
+      // else
+      // {
+      //   // echo 'else'.'<br>';
+        
+      //   // dd($this->months[$records[$i]]);
+      //   dd($records[$i]);
+
+      //   $offset++;
+      //   $returnRecords[$i]['month'] = $this->months[$i + 1];
+      //   $returnRecords[$i]['count'] = '0';
+      // }
+    }
+
+    // return $returnRecords;
+    dd($returnRecords);
+  }
+
+  private function willnamelater($arr, $loops)
+  {
+    for($i = 1; $i <= $loops; $i++)
+    {
+      // $this->months[$i];
+    }
+
+
+
+
+
+
+    // newMonthsArr[]
+
+    //loop through $months[]
+    //foreeach month[] as month
+    // {
+        // compare month[] with $arr->month
+        // if matches add $arr->count to newMonthsArr
+
+    // else add 0 to $arr->count to newMonthsArr
+    // }
+
+    // return newMonthsArr;
+  }
+
+
+
+
+
+
+
+
 
 }
