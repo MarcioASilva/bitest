@@ -329,71 +329,28 @@ class PagesController extends Controller {
 
   private function fillRecordsMonthGaps($records, $loops)
   {
-    
     $offset = 0;
     $returnRecords = [];
 
-    for($i = 0; 1; $i++)
+    for($i = 0; $i < $loops; $i++)
     {
-      
-      // dd($records[$i + $offset]['month']);
-      if(isset($records[$i + $offset]['month'])) //&& ($i == $records[$i + $offset]['month']))
+      if(isset($records[$i - $offset]['month']) && $i == $records[$i - $offset]['month'])
       {
-        
-        // dd($records[$i + $offset]['month']);
-        // echo 'if'.'<br>';
-        $returnRecords[$i]['month'] = $this->months[$records[$i]['month']];
-        $returnRecords[$i]['count'] = number_format($records[$i]['count']);
+        $returnRecords[$i]['month'] = $this->months[($records[$i - $offset]['month']) + 1];
+        $returnRecords[$i]['count'] = number_format($records[$i - $offset]['count']);
       }
-      // else
-      // {
-      //   // echo 'else'.'<br>';
-        
-      //   // dd($this->months[$records[$i]]);
-      //   dd($records[$i]);
 
-      //   $offset++;
-      //   $returnRecords[$i]['month'] = $this->months[$i + 1];
-      //   $returnRecords[$i]['count'] = '0';
-      // }
+      else
+      {
+        $offset++;
+
+        $returnRecords[$i]['month'] = $this->months[$i + 1];
+        $returnRecords[$i]['count'] = '0';
+      }
     }
 
-    // return $returnRecords;
     dd($returnRecords);
+    return $returnRecords;
   }
-
-  private function willnamelater($arr, $loops)
-  {
-    for($i = 1; $i <= $loops; $i++)
-    {
-      // $this->months[$i];
-    }
-
-
-
-
-
-
-    // newMonthsArr[]
-
-    //loop through $months[]
-    //foreeach month[] as month
-    // {
-        // compare month[] with $arr->month
-        // if matches add $arr->count to newMonthsArr
-
-    // else add 0 to $arr->count to newMonthsArr
-    // }
-
-    // return newMonthsArr;
-  }
-
-
-
-
-
-
-
-
 
 }
