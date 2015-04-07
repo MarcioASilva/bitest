@@ -112,8 +112,6 @@ class PagesController extends Controller {
     $series1 = $this->fillRecordsMonthGaps($previousYearData->toArray(), 12);
     $series2 = $this->fillRecordsMonthGaps($currentYearData->toArray(), $this->numberOfMonthsIntoThisYear());
 
-    dd($series1);
-
     // Return everything
     return Response::json([
         'error'         => false,
@@ -334,9 +332,9 @@ class PagesController extends Controller {
 
     for($i = 0; $i < $loops; $i++)
     {
-      if(isset($records[$i - $offset]['month']) && $i == $records[$i - $offset]['month'])
+      if(isset($records[$i - $offset]['month']) && ($i + 1) == $records[$i - $offset]['month'])
       {
-        $returnRecords[$i]['month'] = $this->months[($records[$i - $offset]['month']) + 1];
+        $returnRecords[$i]['month'] = $this->months[$records[$i - $offset]['month']];
         $returnRecords[$i]['count'] = number_format($records[$i - $offset]['count']);
       }
 
@@ -349,7 +347,6 @@ class PagesController extends Controller {
       }
     }
 
-    dd($returnRecords);
     return $returnRecords;
   }
 
