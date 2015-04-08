@@ -260,21 +260,27 @@ class PagesController extends Controller {
   {
     $arr = str_split($float);
 
-    if($arr[0] == 0 && $arr[1] == 0 && $arr[2] == 0)
+    // if($arr[0] == 0 && $arr[2] == 0 && $arr[3] == 0 && $arr[4] == 0)
+    // {
+    //   $float = round($float, 4);
+    // }
+
+    if($arr[0] == 0 && $arr[2] == 0 && $arr[3] == 0 && $arr[4] != 0)
     {
-      $float = round($float, 4);
+      $float = round($float, 3);
     }
 
-    if($arr[0] == 0 && $arr[1] == 0)
+    if($arr[0] == 0 && $arr[2] == 0 && $arr[3] != 0)
     {
       $float = round($float, 2);
     }
     
-    if($arr[0] == 0)
+    if($arr[0] == 0 && $arr[2] != 0)
     {
       $float = round($float, 1);
     }
-    else
+
+    elseif ($float >= 1)
     {
       $float = round($float, 0); 
     }
