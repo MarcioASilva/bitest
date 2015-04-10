@@ -31,10 +31,11 @@ class PagesController extends Controller {
     $selectDrodpdown = Report::orderBy('report_date', 'desc')->get();
     $trimmedDropdown = [];
 
-    foreach($selectDrodpdown as $rows)
+    foreach($selectDrodpdown as $key => $rows)
     {
       $rows->report_date = Carbon::createFromTimeStamp(strtotime($rows->report_date))->format('F Y');
-      $trimmedDropdown[] = $rows->report_date;
+      $trimmedDropdown[$key]['id']    = $rows->id;
+      $trimmedDropdown[$key]['value'] = $rows->report_date;
     }
 
     return Response::json([
@@ -52,8 +53,8 @@ class PagesController extends Controller {
     return Response::json([
         'error'   => false,
         'records' => [
-          'report_date'   => Carbon::createFromTimeStamp(strtotime($this->reportDate))->format('jS F Y'),
-          'exported_date' => Carbon::createFromTimeStamp(strtotime($this->exportedDate))->format('jS F Y h:i A')
+          'report_date'   => Carbon::createFromTimeStamp(strtotime($this->reportDate))->->format('jS M Y'),
+          'exported_date' => Carbon::createFromTimeStamp(strtotime($this->exportedDate))->format('jS M Y h:i A')
         ]
       ],
       200
@@ -354,6 +355,11 @@ class PagesController extends Controller {
     }
 
     return $returnRecords;
+  }
+
+  public function getBill()
+  {
+    echo 'a';
   }
 
 }
