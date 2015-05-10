@@ -54,7 +54,7 @@ return array(
 
 		'mysql' => array(
 			'driver'    => 'mysql',
-			'host'      => $_SERVER['DATABASE1_HOST'],
+			'host'      => 'localhost',
 			'database'  => $_SERVER['DATABASE1_NAME'],
 			'username'  => $_SERVER['DATABASE1_USER'],
 			'password'  => $_SERVER['DATABASE1_PASS'],
